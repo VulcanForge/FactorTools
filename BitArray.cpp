@@ -1,12 +1,5 @@
 #include "BitArray.h"
 
-BitArray::BitArray (size_t count)
-    : count (count)
-{
-    size_t storageCount = (count + 63) / 64;
-    storage = std::vector<uint64_t> (storageCount);
-}
-
 BitArray::BitArray (size_t count, bool defaultValue)
     : count (count)
 {
@@ -23,14 +16,20 @@ bool BitArray::Get (size_t index) const
     return bool (storage[storageIndex] & mask);
 }
 
-void BitArray::Set (size_t index, bool value)
+void BitArray::Set (size_t index)
+{
+    size_t storageIndex = index / 64;
+    size_t internalIndex = index % 64;    
+    uint64_t valueMask = 1ULL << internalIndex;
+    storage[storageIndex] |= valueMask;
+}
+
+void BitArray::Reset (size_t index)
 {
     size_t storageIndex = index / 64;
     size_t internalIndex = index % 64;
-    uint64_t intValue = uint64_t (value);
-    uint64_t clearMask = ~(1ULL << internalIndex);
-    uint64_t valueMask = intValue << internalIndex;
-    storage[storageIndex] = (storage[storageIndex] & clearMask) | valueMask;
+    uint64_t valueMask = ~(1ULL << internalIndex);
+    storage[storageIndex] &= valueMask;
 }
 
 size_t BitArray::Count () const
