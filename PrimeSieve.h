@@ -68,6 +68,11 @@ public:
     size_t Count () const;
 
     /// <summary>
+    /// Returns the number of primes in [0, n], if n is in [0, Limit ()).
+    /// </summary>
+    size_t PrimePi (size_t n) const;
+
+    /// <summary>
     /// Returns whether n is prime, if n is in [0, Limit ()).
     /// </summary>
     /// <param name="n">The number n.</param>

@@ -1,6 +1,8 @@
 #include "PrimeSieve.h"
 
+#include <algorithm>
 #include <iostream>
+#include <iterator>
 
 PrimeSieve::PrimeSieve (size_t limit)
     : PrimeSieve (limit, false) {}
@@ -72,6 +74,12 @@ std::vector<uint64_t>::const_iterator PrimeSieve::ListEnd () const
 size_t PrimeSieve::Count () const
 {
     return primes->size ();
+}
+
+size_t PrimeSieve::PrimePi (size_t n) const
+{
+    auto nextPrime = std::upper_bound (primes->cbegin (), primes->cend (), n);
+    return std::distance (primes->cbegin (), nextPrime);
 }
 
 bool PrimeSieve::IsPrime (size_t n) const
