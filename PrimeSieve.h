@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "BitArray.h"
@@ -18,38 +19,38 @@ private:
     BitArray sieve;
 
     /// <summary>
-    /// The upper bound on the numbers sieved.
+    /// The exclusive upper bound on the numbers sieved.
     /// </summary>
     size_t limit;
 
     /// <summary>
     /// The prime numbers in [0, limit).
     /// </summary>
-    std::vector<uint64_t> primes;
+    std::shared_ptr<std::vector<uint64_t>> primes;
 
 public:
     /// <summary>
     /// Constructs a PrimeSieve over [0, limit).
     /// </summary>
-    /// <param name="limit">The maximum index of the sieve + 1.</param>
+    /// <param name="limit">The exclusive upper bound on the numbers sieved.</param>
     PrimeSieve (size_t limit);
 
     /// <summary>
     /// Constructs a PrimeSieve over [0, limit).
     /// </summary>
-    /// <param name="limit">The maximum index of the sieve + 1.</param>
+    /// <param name="limit">The exclusive upper bound on the numbers sieved.</param>
     /// <param name="verbose">Whether to output progress to std::clog.</param>
     PrimeSieve (size_t limit, bool verbose);
 
     /// <summary>
-    /// Returns the upper bound on the primes sieved.
+    /// Returns the exclusive upper bound on the numbers sieved.
     /// </summary>
     size_t Limit () const;
 
     /// <summary>
     /// Returns the list of primes in [0, Limit ()).
     /// </summary>
-    const std::vector<uint64_t>& List () const;
+    std::shared_ptr<const std::vector<uint64_t>> List () const;
 
     /// <summary>
     /// Returns an iterator to the beginning of the primes in [0, Limit ()).

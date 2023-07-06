@@ -41,7 +41,7 @@ void OptimizedFactorization::GeneratePrimeFactors (bool verbose)
 
             if (power > 0)
             {
-                primeFactors.emplace_back (prime, power);
+                primeFactors->emplace_back (prime, power);
                 sqrt_r = uint64_t (sqrt (r));
             }
         }
@@ -60,93 +60,93 @@ void OptimizedFactorization::GeneratePrimeFactors (bool verbose)
 
             if (power > 0)
             {
-                primeFactors.emplace_back (prime, power);
+                primeFactors->emplace_back (prime, power);
                 sqrt_r = uint64_t (sqrt (r));
             }
         }
 
     if (r > 1)
-        primeFactors.emplace_back (r, 1);
+        primeFactors->emplace_back (r, 1);
 }
 
 void OptimizedFactorization::GenerateFactors ()
 {
-    size_t addressSize = primeFactors.size ();
+    size_t addressSize = primeFactors->size ();
     std::vector<size_t> address (addressSize, 0);
     size_t numberFactors = 1;
 
     for (size_t i = 0; i < addressSize; i++)
-        numberFactors *= (primeFactors[i].power + 1);
+        numberFactors *= ((*primeFactors)[i].power + 1);
 
     for (size_t i = 0; i < numberFactors; i++)
     {
         uint64_t factor = 1;
 
         for (size_t j = 0; j < addressSize; j++)
-            factor *= Pow (primeFactors[j].prime, address[j]);
+            factor *= Pow ((*primeFactors)[j].prime, address[j]);
 
-        factors.push_back (factor);
+        factors->push_back (factor);
 
         for (size_t j = 0; j < addressSize; j++)
         {
-            address[j] = (address[j] + 1) % (primeFactors[j].power + 1);
+            address[j] = (address[j] + 1) % ((*primeFactors)[j].power + 1);
 
             if (address[j] > 0)
                 break;
         }
     }
 
-    std::sort (factors.begin (), factors.end ());
+    std::sort (factors->begin (), factors->end ());
 }
 
 OptimizedFactorization::OptimizedFactorization (uint64_t n)
     : OptimizedFactorization (n, false) {}
 
 OptimizedFactorization::OptimizedFactorization (uint64_t n, bool verbose)
-    : n (n)
+    : n (n), primeFactors (std::make_shared <std::vector<PrimePower>> ()), factors (std::make_shared<std::vector<uint64_t>> ())
 {
     GeneratePrimeFactors (verbose);
     GenerateFactors ();
 }
 
-const std::vector<PrimePower>& OptimizedFactorization::PrimeFactors () const
+std::shared_ptr<const std::vector<PrimePower>> OptimizedFactorization::PrimeFactors () const
 {
     return primeFactors;
 }
 
 std::vector<PrimePower>::const_iterator OptimizedFactorization::PrimeFactorsBegin () const
 {
-    return primeFactors.cbegin ();
+    return primeFactors->cbegin ();
 }
 
 std::vector<PrimePower>::const_iterator OptimizedFactorization::PrimeFactorsEnd () const
 {
-    return primeFactors.cend ();
+    return primeFactors->cend ();
 }
 
 size_t OptimizedFactorization::PrimeFactorsCount () const
 {
-    return primeFactors.size ();
+    return primeFactors->size ();
 }
 
-const std::vector<uint64_t>& OptimizedFactorization::Factors () const
+std::shared_ptr<const std::vector<uint64_t>> OptimizedFactorization::Factors () const
 {
     return factors;
 }
 
 std::vector<uint64_t>::const_iterator OptimizedFactorization::FactorsBegin () const
 {
-    return factors.cbegin ();
+    return factors->cbegin ();
 }
 
 std::vector<uint64_t>::const_iterator OptimizedFactorization::FactorsEnd () const
 {
-    return factors.cend ();
+    return factors->cend ();
 }
 
 size_t OptimizedFactorization::FactorsCount () const
 {
-    return factors.size ();
+    return factors->size ();
 }
 
 uint64_t OptimizedFactorization::SumProperFactors () const

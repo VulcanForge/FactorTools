@@ -1,7 +1,11 @@
 #include "BitArray.h"
 
 BitArray::BitArray (size_t count)
-    : count (count), storage (count) {}
+    : count (count)
+{
+    size_t storageCount = (count + 63) / 64;
+    storage = std::vector<uint64_t> (storageCount);
+}
 
 BitArray::BitArray (size_t count, bool defaultValue)
     : count (count)

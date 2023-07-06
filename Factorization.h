@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "PrimePower.h"
@@ -20,12 +21,12 @@ private:
     /// <summary>
     /// The prime factors of n.
     /// </summary>
-    std::vector<PrimePower> primeFactors;
+    std::shared_ptr<std::vector<PrimePower>> primeFactors;
 
     /// <summary>
     /// The factors of n.
     /// </summary>
-    std::vector<uint64_t> factors;
+    std::shared_ptr<std::vector<uint64_t>> factors;
 
     /// <summary>
     /// Computes the prime factors of n.
@@ -55,7 +56,7 @@ public:
     /// <summary>
     /// Returns the list of prime factors of n.
     /// </summary>
-    const std::vector<PrimePower>& PrimeFactors () const;
+    std::shared_ptr<const std::vector<PrimePower>> PrimeFactors () const;
 
     /// <summary>
     /// Returns an iterator to the beginning of the prime factors of n.
@@ -75,7 +76,7 @@ public:
     /// <summary>
     /// Returns the list of factors of n.
     /// </summary>
-    const std::vector<uint64_t>& Factors () const;
+    std::shared_ptr<const std::vector<uint64_t>> Factors () const;
 
     /// <summary>
     /// Returns an iterator to the beginning of the factors of n.
