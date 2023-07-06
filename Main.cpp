@@ -3,14 +3,12 @@
 #include <vector>
 
 #include "Factorization.h"
-#include "OptimizedFactorization.h"
 #include "PrimeCount.h"
 #include "PrimeSieve.h"
 
 int main ()
 {
     char c;
-    OptimizedFactorization::InitializeCache (0x100000, false);
 
     while (true)
     {
@@ -113,9 +111,11 @@ int main ()
             std::cin >> upper;
             std::cout << "\n";
 
+            std::shared_ptr<PrimeSieve> sieve = std::make_shared<PrimeSieve> (uint64_t (sqrt (upper)));
+
             for (uint64_t n = lower; n < upper; n++)
             {
-                OptimizedFactorization* factorization = new OptimizedFactorization (n);
+                Factorization* factorization = new Factorization (n, sieve);
 
                 if (factorization->IsPrime ())
                     std::cout << n << " is prime" << "\n\n";

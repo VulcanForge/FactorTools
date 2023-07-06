@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "PrimePower.h"
+#include "PrimeSieve.h"
 
 /// <summary>
 /// A factorization of a non-negative integer n.
@@ -32,7 +33,7 @@ private:
     /// Computes the prime factors of n.
     /// </summary>
     /// <param name="verbose">Whether to output progress to clog.</param>
-    void GeneratePrimeFactors (bool verbose);
+    void GeneratePrimeFactors (std::shared_ptr<PrimeSieve> sieve, bool verbose);
 
     /// <summary>
     /// Computes the factors of n.
@@ -44,14 +45,15 @@ public:
     /// Constructs a Factorization of n.
     /// </summary>
     /// <param name="n">The number n.</param>
-    Factorization (uint64_t n);
+    /// <param name="verbose">Whether to output progress to clog.</param>
+    Factorization (uint64_t n, bool verbose = false);
 
     /// <summary>
-    /// Constructs a Factorization of n.
+    /// Constructs a Factorization of n using a precomputed list of primes.
     /// </summary>
     /// <param name="n">The number n.</param>
     /// <param name="verbose">Whether to output progress to clog.</param>
-    Factorization (uint64_t n, bool verbose);
+    Factorization (uint64_t n, std::shared_ptr<PrimeSieve> sieve, bool verbose = false);
 
     /// <summary>
     /// Returns the list of prime factors of n.
