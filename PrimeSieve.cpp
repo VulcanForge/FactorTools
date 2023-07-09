@@ -4,9 +4,6 @@
 #include <iostream>
 #include <iterator>
 
-PrimeSieve::PrimeSieve (size_t limit)
-    : PrimeSieve (limit, false) {}
-
 PrimeSieve::PrimeSieve (size_t limit, bool verbose)
     : limit (limit), sieve (limit, true), primes (std::make_shared<std::vector<uint64_t>> ())
 {

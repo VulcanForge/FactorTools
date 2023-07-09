@@ -2,25 +2,15 @@
 
 #include <cstdint>
 
-/// <summary>
-/// A prime power.
-/// </summary>
+// A prime power.
 struct PrimePower
 {
-    /// <summary>
-    /// The prime number.
-    /// </summary>
+    // The prime.
     uint64_t prime;
 
-    /// <summary>
-    /// The power.
-    /// </summary>
+    // The power.
     uint64_t power;
 
-    /// <summary>
-    /// Constructs a PrimePower.
-    /// </summary>
-    /// <param name="prime">The prime number.</param>
-    /// <param name="power">The power.</param>
+    // Constructs a PrimePower.
     PrimePower (uint64_t prime, uint64_t power);
 };

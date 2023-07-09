@@ -7,74 +7,42 @@
 
 #include "BitArray.h"
 
-/// <summary>
-/// An Eratosthenes prime sieve.
-/// </summary>
+// An Eratosthenes prime sieve.
 class PrimeSieve
 {
 private:
-    /// <summary>
-    /// The underlying bit array.
-    /// </summary>
+    // The underlying bit array.
     BitArray sieve;
 
-    /// <summary>
-    /// The exclusive upper bound on the numbers sieved.
-    /// </summary>
+    // The exclusive upper bound on the numbers sieved.
     size_t limit;
 
-    /// <summary>
-    /// The prime numbers in [0, limit).
-    /// </summary>
+    // The prime numbers in [0, 'limit').
     std::shared_ptr<std::vector<uint64_t>> primes;
 
 public:
-    /// <summary>
-    /// Constructs a PrimeSieve over [0, limit).
-    /// </summary>
-    /// <param name="limit">The exclusive upper bound on the numbers sieved.</param>
-    PrimeSieve (size_t limit);
+    // Constructs a PrimeSieve over [0, limit) and optionally outputs progress to 'clog'.
+    PrimeSieve (size_t limit, bool verbose = false);
 
-    /// <summary>
-    /// Constructs a PrimeSieve over [0, limit).
-    /// </summary>
-    /// <param name="limit">The exclusive upper bound on the numbers sieved.</param>
-    /// <param name="verbose">Whether to output progress to std::clog.</param>
-    PrimeSieve (size_t limit, bool verbose);
-
-    /// <summary>
-    /// Returns the exclusive upper bound on the numbers sieved.
-    /// </summary>
+    // Returns the exclusive upper bound on the numbers sieved.
     size_t Limit () const;
 
-    /// <summary>
-    /// Returns the list of primes in [0, Limit ()).
-    /// </summary>
+    // Returns the list of primes in [0, Limit ()).
     std::shared_ptr<const std::vector<uint64_t>> List () const;
 
-    /// <summary>
-    /// Returns an iterator to the beginning of the primes in [0, Limit ()).
-    /// </summary>
+    // Returns an iterator to the beginning of the primes in [0, Limit ()).
     std::vector<uint64_t>::const_iterator ListBegin () const;
 
-    /// <summary>
-    /// Returns an iterator to the end of the primes in [0, Limit ()).
-    /// </summary>
+    // Returns an iterator to the end of the primes in [0, Limit ()).
     std::vector<uint64_t>::const_iterator ListEnd () const;
 
-    /// <summary>
-    /// Returns the number of primes in [0, Limit ()).
-    /// </summary>
+    // Returns the number of primes in [0, Limit ()).
     size_t Count () const;
 
-    /// <summary>
-    /// Returns the number of primes in [0, n], if n is in [0, Limit ()).
-    /// </summary>
+    // Returns the number of primes in [0, 'n'], if 'n' is in [0, Limit ()).
+    // Behaviour if 'n' >= Limit () is undefined.
     size_t PrimePi (size_t n) const;
 
-    /// <summary>
-    /// Returns whether n is prime, if n is in [0, Limit ()).
-    /// </summary>
-    /// <param name="n">The number n.</param>
+    // Returns whether 'n' is prime, if 'n' is in [0, Limit ()).
     bool IsPrime (size_t n) const;
 };

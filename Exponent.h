@@ -2,16 +2,8 @@
 
 #include <cstdint>
 
-/// <summary>
-/// Returns a base to the power of an exponent.
-/// </summary>
-/// <param name="base">The base.</param>
-/// <param name="exponent">The exponent.</param>
+// Raises an unsigned integer to the power of another unsigned integer.
 uint64_t Pow (uint64_t base, uint64_t exponent);
 
-/// <summary>
-/// Returns a base to the power of an exponent.
-/// </summary>
-/// <param name="base">The base.</param>
-/// <param name="exponent">The exponent.</param>
+// Raises a double to the power of an unsigned integer.
 double Pow (double base, uint64_t exponent);
