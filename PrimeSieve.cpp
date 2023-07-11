@@ -1,15 +1,14 @@
 #include "PrimeSieve.h"
 
+#include <algorithm>
 #include <iostream>
-
-PrimeSieve::PrimeSieve (size_t limit)
-    : PrimeSieve (limit, false) {}
+#include <iterator>
 
 PrimeSieve::PrimeSieve (size_t limit, bool verbose)
     : limit (limit), sieve (limit, true), primes (std::make_shared<std::vector<uint64_t>> ())
 {
-    sieve.Set (0, false);
-    sieve.Set (1, false);
+    sieve.Reset (0);
+    sieve.Reset (1);
     uint64_t prime = 2;
     primes->emplace_back (2);
 
@@ -19,7 +18,7 @@ PrimeSieve::PrimeSieve (size_t limit, bool verbose)
             std::clog << "Striking out multiples of " << prime << "\n";
 
             for (uint64_t i = prime * prime; i < limit; i += prime)
-                sieve.Set (size_t (i), false);
+                sieve.Reset (size_t (i));
 
             for (uint64_t i = prime + 1; ; i++)
                 if (sieve.Get (size_t (i)))
@@ -33,7 +32,7 @@ PrimeSieve::PrimeSieve (size_t limit, bool verbose)
         while (prime * prime < limit)
         {
             for (uint64_t i = prime * prime; i < limit; i += prime)
-                sieve.Set (size_t (i), false);
+                sieve.Reset (size_t (i));
 
             for (uint64_t i = prime + 1; ; i++)
                 if (sieve.Get (size_t (i)))
@@ -72,6 +71,12 @@ std::vector<uint64_t>::const_iterator PrimeSieve::ListEnd () const
 size_t PrimeSieve::Count () const
 {
     return primes->size ();
+}
+
+size_t PrimeSieve::PrimePi (size_t n) const
+{
+    auto nextPrime = std::upper_bound (primes->cbegin (), primes->cend (), n);
+    return std::distance (primes->cbegin (), nextPrime);
 }
 
 bool PrimeSieve::IsPrime (size_t n) const

@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-CoprimeSieve::CoprimeSieve (size_t lowerLimit, size_t upperLimit, std::shared_ptr<const std::vector<uint64_t>> obstructions)
-    : CoprimeSieve (lowerLimit, upperLimit, obstructions, false) {}
-
 CoprimeSieve::CoprimeSieve (size_t lowerLimit, size_t upperLimit, std::shared_ptr<const std::vector<uint64_t>> obstructions, bool verbose)
     : lowerLimit (lowerLimit), upperLimit (upperLimit), sieve (upperLimit - lowerLimit, true), obstructions (obstructions), coprimes (std::make_shared<std::vector<uint64_t>> ())
 {
@@ -16,7 +13,7 @@ CoprimeSieve::CoprimeSieve (size_t lowerLimit, size_t upperLimit, std::shared_pt
             uint64_t firstMultiple = ((lowerLimit + obstruction - 1) / obstruction) * obstruction;
 
             for (uint64_t multiple = firstMultiple; multiple < upperLimit; multiple += obstruction)
-                sieve.Set (multiple - lowerLimit, false);
+                sieve.Reset (multiple - lowerLimit);
         }
     else
         for (uint64_t obstruction : *obstructions)
@@ -24,7 +21,7 @@ CoprimeSieve::CoprimeSieve (size_t lowerLimit, size_t upperLimit, std::shared_pt
             uint64_t firstMultiple = ((lowerLimit + obstruction - 1) / obstruction) * obstruction;
 
             for (uint64_t multiple = firstMultiple; multiple < upperLimit; multiple += obstruction)
-                sieve.Set (multiple - lowerLimit, false);
+                sieve.Reset (multiple - lowerLimit);
         }
 
     for (uint64_t i = lowerLimit; i < upperLimit; i++)

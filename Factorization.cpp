@@ -6,14 +6,12 @@
 #include <numeric>
 
 #include "Exponent.h"
-#include "PrimeSieve.h"
 
-void Factorization::GeneratePrimeFactors (bool verbose)
+void Factorization::GeneratePrimeFactors (std::shared_ptr<PrimeSieve> sieve, bool verbose)
 {
     uint64_t sqrt_r = uint64_t (sqrt (n));
-    PrimeSieve sieve (size_t (sqrt_r + 1), verbose);
-    auto begin = sieve.ListBegin ();
-    auto end = sieve.ListEnd ();
+    auto begin = sieve->ListBegin ();
+    auto end = sieve->ListEnd ();
     uint64_t r = n;
     uint64_t prime = 2;
 
@@ -94,13 +92,13 @@ void Factorization::GenerateFactors ()
     std::sort (factors->begin (), factors->end ());
 }
 
-Factorization::Factorization (uint64_t n)
-    : Factorization (n, false) {}
-
 Factorization::Factorization (uint64_t n, bool verbose)
+    : Factorization (n, std::make_shared <PrimeSieve> (uint64_t (sqrt (n)))) {}
+
+Factorization::Factorization (uint64_t n, std::shared_ptr<PrimeSieve> sieve, bool verbose)
     : n (n), primeFactors (std::make_shared <std::vector<PrimePower>> ()), factors (std::make_shared<std::vector<uint64_t>> ())
 {
-    GeneratePrimeFactors (verbose);
+    GeneratePrimeFactors (sieve, verbose);
     GenerateFactors ();
 }
 
