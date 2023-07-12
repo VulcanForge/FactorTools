@@ -61,5 +61,5 @@ size_t CoprimeSieve::Count () const
 
 bool CoprimeSieve::IsCoprime (size_t n) const
 {
-    return sieve.Get (n);
+    return sieve.Get (n - lowerLimit);
 }
