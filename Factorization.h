@@ -74,7 +74,6 @@ public:
     // Returns whether 'n' is deficient (less than the sum of its proper factors).
     bool IsDeficient () const;
 
-    /// <summary>
-    /// Returns whether 'n is abundant (greater than the sum of its proper factors).
+    // Returns whether 'n' is abundant (greater than the sum of its proper factors).
     bool IsAbundant () const;
 };

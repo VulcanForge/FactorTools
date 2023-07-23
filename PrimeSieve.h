@@ -27,22 +27,34 @@ public:
     // Returns the exclusive upper bound on the numbers sieved.
     size_t Limit () const;
 
-    // Returns the list of primes in [0, Limit ()).
-    std::shared_ptr<const std::vector<uint64_t>> List () const;
+    // Returns the list of primes in [0, 'limit').
+    std::shared_ptr<const std::vector<uint64_t>> Primes () const;
 
-    // Returns an iterator to the beginning of the primes in [0, Limit ()).
-    std::vector<uint64_t>::const_iterator ListBegin () const;
+    // Returns an iterator to the beginning of the primes in [0, 'limit').
+    std::vector<uint64_t>::const_iterator PrimesBegin () const;
 
-    // Returns an iterator to the end of the primes in [0, Limit ()).
-    std::vector<uint64_t>::const_iterator ListEnd () const;
+    // Returns an iterator to the end of the primes in [0, 'limit').
+    std::vector<uint64_t>::const_iterator PrimesEnd () const;
 
-    // Returns the number of primes in [0, Limit ()).
+    // Returns the number of primes in [0, 'limit').
     size_t Count () const;
 
-    // Returns the number of primes in [0, 'n'], if 'n' is in [0, Limit ()).
-    // Behaviour if 'n' >= Limit () is undefined.
+    // Returns the number of primes in [0, 'n'], if 'n' is in [0, 'limit').
+    // Behaviour if 'n' >= 'limit' is undefined.
     size_t PrimePi (size_t n) const;
 
-    // Returns whether 'n' is prime, if 'n' is in [0, Limit ()).
+    // Returns whether 'n' is prime, if 'n' is in [0, 'limit').
+    // Behaviour if 'n' >= 'limit' is undefined.
     bool IsPrime (size_t n) const;
+
+    // BEGIN STL-COMPATIBILITY FUNCTIONS
+
+    // Indexes 'primes'.
+    const uint64_t& operator[] (size_t index) const;
+
+    // Duplicates of 'PrimesBegin' and 'PrimesEnd' for for-each loops.
+
+    std::vector<uint64_t>::const_iterator begin () const;
+
+    std::vector<uint64_t>::const_iterator end () const;
 };

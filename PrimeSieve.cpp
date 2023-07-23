@@ -53,17 +53,17 @@ size_t PrimeSieve::Limit () const
     return limit;
 }
 
-std::shared_ptr<const std::vector<uint64_t>> PrimeSieve::List () const
+std::shared_ptr<const std::vector<uint64_t>> PrimeSieve::Primes () const
 {
     return primes;
 }
 
-std::vector<uint64_t>::const_iterator PrimeSieve::ListBegin () const
+std::vector<uint64_t>::const_iterator PrimeSieve::PrimesBegin () const
 {
     return primes->cbegin ();
 }
 
-std::vector<uint64_t>::const_iterator PrimeSieve::ListEnd () const
+std::vector<uint64_t>::const_iterator PrimeSieve::PrimesEnd () const
 {
     return primes->cend ();
 }
@@ -82,4 +82,19 @@ size_t PrimeSieve::PrimePi (size_t n) const
 bool PrimeSieve::IsPrime (size_t n) const
 {
     return sieve.Get (n);
+}
+
+const uint64_t& PrimeSieve::operator[] (size_t index) const
+{
+    return (*primes)[index];
+}
+
+std::vector<uint64_t>::const_iterator PrimeSieve::begin () const
+{
+    return primes->cbegin ();
+}
+
+std::vector<uint64_t>::const_iterator PrimeSieve::end () const
+{
+    return primes->cend ();
 }

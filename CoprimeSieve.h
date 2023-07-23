@@ -31,19 +31,22 @@ public:
     // and optionally outputs progress to 'clog'.
     CoprimeSieve (size_t lowerLimit, size_t upperLimit, std::shared_ptr<const std::vector<uint64_t>> obstructions, bool verbose = false);
 
+    CoprimeSieve (size_t lowerLimit, size_t upperLimit, std::vector<uint64_t>::const_iterator obstructionsBegin, std::vector<uint64_t>::const_iterator obstructionsEnd, bool verbose = false);
+
     // Returns the inclusive lower and the exclusive upper bounds on the numbers sieved.
     std::pair<size_t, size_t> Limits () const;
 
     // Returns the list of numbers in ['lowerLimit', 'upperLimit') coprime to every element of 'obstructions'.
-    std::shared_ptr<const std::vector<uint64_t>> List () const;
+    std::shared_ptr<const std::vector<uint64_t>> Coprimes () const;
 
     // Returns an iterator to the beginning of the numbers in ['lowerLimit', 'upperLimit') coprime to every element of 'obstructions'.
-    std::vector<uint64_t>::const_iterator ListBegin () const;
+    std::vector<uint64_t>::const_iterator CoprimesBegin () const;
 
     // Returns an iterator to the end of the numbers in ['lowerLimit', 'upperLimit') coprime to every element of 'obstructions'.
-    std::vector<uint64_t>::const_iterator ListEnd () const;
+    std::vector<uint64_t>::const_iterator CoprimesEnd () const;
 
     // Returns the list of obstructions.
+    // Will be a nullptr if the sieve was constructed from iterators.
     std::shared_ptr<const std::vector<uint64_t>> ObstructionList () const;
     
     // Returns the number of numbers in ['lowerLimit', 'upperLimit') coprime to every element of 'obstructions'.
@@ -51,4 +54,15 @@ public:
 
     // Returns whether 'n' is coprime to every element of obstructions, if n is in ['lowerLimit', 'upperLimit').
     bool IsCoprime (size_t n) const;
+
+    // BEGIN STL-COMPATIBILITY FUNCTIONS
+
+    // Indexes 'coprimes'.
+    const uint64_t& operator[] (size_t index) const;
+
+    // Duplicates of 'CoprimesBegin' and 'CoprimesEnd' for for-each loops.
+
+    std::vector<uint64_t>::const_iterator begin () const;
+
+    std::vector<uint64_t>::const_iterator end () const;
 };

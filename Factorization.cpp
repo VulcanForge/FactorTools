@@ -10,8 +10,8 @@
 void Factorization::GeneratePrimeFactors (std::shared_ptr<PrimeSieve> sieve, bool verbose)
 {
     uint64_t sqrt_r = uint64_t (sqrt (n));
-    auto begin = sieve->ListBegin ();
-    auto end = sieve->ListEnd ();
+    auto begin = sieve->PrimesBegin ();
+    auto end = sieve->PrimesEnd ();
     uint64_t r = n;
     uint64_t prime = 2;
 
