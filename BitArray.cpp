@@ -1,10 +1,12 @@
 #include "BitArray.h"
 
+#include <limits>
+
 BitArray::BitArray (size_t count, bool defaultValue)
     : count (count)
 {
     size_t storageCount = (count + 63) / 64;
-    uint64_t defaultIntValue = 0xFFFFFFFFFFFFFFFF * uint64_t (defaultValue);
+    uint64_t defaultIntValue = std::numeric_limits<uint64_t>::max () * uint64_t (defaultValue);
     storage = std::vector<uint64_t> (storageCount, defaultIntValue);
 }
 

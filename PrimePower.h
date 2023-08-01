@@ -3,14 +3,16 @@
 #include <cstdint>
 
 // A prime power.
+template<typename TPrime = uint64_t, typename TPower = uint16_t>
 struct PrimePower
 {
     // The prime.
-    uint64_t prime;
+    TPrime prime;
 
     // The power.
-    uint64_t power;
+    TPower power;
 
     // Constructs a PrimePower.
-    PrimePower (uint64_t prime, uint64_t power);
+    PrimePower (TPrime prime, TPower power)
+        : prime (prime), power (power) {}
 };

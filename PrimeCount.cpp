@@ -5,7 +5,7 @@
 
 uint64_t LegendreCount (uint64_t n)
 {
-    return uint64_t (n / (log (n) - 1));
+    return n / (log (n) - 1);
 }
 
 uint64_t LiCount (uint64_t n)
@@ -26,5 +26,5 @@ uint64_t LiCount (uint64_t n)
         ifactorial *= i;
     } while (li + term != li);
 
-    return uint64_t (li);
+    return li;
 }
