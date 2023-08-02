@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -11,7 +12,7 @@
 #include "BitArray.h"
 
 // An Eratosthenes prime sieve.
-template<typename T = uint64_t>
+template<std::unsigned_integral T = uint64_t>
 class PrimeSieve
 {
 private:

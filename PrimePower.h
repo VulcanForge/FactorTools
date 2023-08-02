@@ -1,9 +1,10 @@
 #pragma once
 
+#include <concepts>
 #include <cstdint>
 
 // A prime power.
-template<typename TPrime = uint64_t, typename TPower = uint16_t>
+template<std::unsigned_integral TPrime = uint64_t, std::unsigned_integral TPower = uint16_t>
 struct PrimePower
 {
     // The prime.

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -9,7 +10,7 @@
 #include "PrimePower.h"
 
 // Represents the set of numbers whose prime factors lie in a given set and which are less than a given upper bound.
-template<typename T = uint64_t>
+template<std::unsigned_integral T = uint64_t>
 class BoundedPrimeSetProducts
 {
 private:

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
@@ -14,7 +15,7 @@
 #include "PrimeSieve.h"
 
 // A factorization of a natural number.
-template<typename T = uint64_t>
+template<std::unsigned_integral T = uint64_t>
 class Factorization
 {
 private:

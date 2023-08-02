@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -8,7 +9,7 @@
 #include "PrimeSieve.h"
 
 // Represents the set of sets of primes whose product is less than a given upper bound.
-template<typename T = uint64_t>
+template<std::unsigned_integral T = uint64_t>
 class BoundedPrimeSets
 {
 private:
@@ -134,7 +135,7 @@ public:
 
         friend class BoundedPrimeSets;
 
-        template<typename T>
+        template<std::unsigned_integral T>
         friend class BoundedPrimeSetProducts;
     };
 
@@ -159,10 +160,10 @@ public:
         return end;
     }
 
-    template<typename T>
+    template<std::unsigned_integral T>
     friend class BoundedFactorizations;
 
-    template<typename T>
+    template<std::unsigned_integral T>
     friend class BoundedPrimeSetProducts;
 };
 
