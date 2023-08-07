@@ -1,6 +1,5 @@
 #pragma once
 
-#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -9,24 +8,23 @@
 #include "PrimeSieve.h"
 
 // Represents the set of sets of primes whose product is less than a given upper bound.
-template<std::unsigned_integral T = uint64_t>
 class BoundedPrimeSets
 {
 private:
     // The upper bound.
-    T upperBound;
+    uint64_t upperBound;
 
     // The primes less than 'upperBound'.
-    std::vector<T> primePool;
+    std::vector<uint64_t> primePool;
 
 public:
     // Constructs a BoundedPrimeSets object with the given upper bound.
-    BoundedPrimeSets (T upperBound)
+    BoundedPrimeSets (uint64_t upperBound)
         : upperBound (upperBound)
     {
         // 1550 is the largest prime gap in the range [0,2^64).
         // We require at least one prime larger than 'upperBound' to avoid expensive range checking.
-        primePool = *(PrimeSieve<T> (upperBound + 1550).Primes ());
+        primePool = *(PrimeSieve<uint64_t> (upperBound + 1550).Primes ());
     }
 
     // Represents an iterator over the sets of primes represented by a given BoundedPrimeSets object.
@@ -37,13 +35,13 @@ public:
         const BoundedPrimeSets& parent;
 
         // The product of the current set of primes.
-        T n;
+        uint64_t n;
 
         // The indices in 'parent.primePool' of the primes in the current set.
         std::vector<size_t> indices;
 
         // The current set of primes.
-        std::vector<T> primes;
+        std::vector<uint64_t> primes;
 
         // Constructs a BoundedPrimeSetIterator object with the given parent.
         // Most construction is performed in the factory 'Begin' and 'End' methods of BoundedPrimeSets.
@@ -52,20 +50,20 @@ public:
 
     public:
         // Returns an iterator to the beginning of the current set of primes.
-        std::vector<T>::const_iterator PrimesBegin () const
+        std::vector<uint64_t>::const_iterator PrimesBegin () const
         {
             // The first two "primes" are dummy values for a more efficient increment algorithm.
             return primes.cbegin () + 2;
         }
 
         // Returns an iterator to the end of the current set of primes.
-        std::vector<T>::const_iterator PrimesEnd () const
+        std::vector<uint64_t>::const_iterator PrimesEnd () const
         {
             return primes.cend ();
         }
 
         // Returns the product of the current set of primes.
-        T N () const
+        uint64_t N () const
         {
             return n;
         }
@@ -79,7 +77,7 @@ public:
             // 'primePool' contains at least one prime larger than 'upperBound',
             // and 'indices.back ()' will never exceed pi(upperBound - 1) - 1,
             // so there is no risk of bad index exceptions.
-            T nextPrime = parent.primePool[indices.back () + 1];
+            uint64_t nextPrime = parent.primePool[indices.back () + 1];
 
             // Attempt to append the next prime.
             if (n * nextPrime < parent.upperBound)
@@ -90,7 +88,7 @@ public:
                 return *this;
             }
 
-            T currentPrime = primes.back ();
+            uint64_t currentPrime = primes.back ();
 
             // Attempt to increment the last prime (and end the loop).
             // If that is too large, remove the last prime and repeat.
@@ -127,6 +125,12 @@ public:
             return old;
         }
 
+        // Returns the value of the Moebius function at 'n'.
+        int16_t MoebiusN () const
+        {
+            return (primes.size () % 2 == 0) ? 1 : -1;
+        }
+
         // WARNING: No comparison of parent object is performed.
         friend bool operator== (const BoundedPrimeSetIterator& left, const BoundedPrimeSetIterator& right)
         {
@@ -135,7 +139,6 @@ public:
 
         friend class BoundedPrimeSets;
 
-        template<std::unsigned_integral T>
         friend class BoundedPrimeSetProducts;
     };
 
@@ -147,7 +150,7 @@ public:
         // The first index is 2^64 - 1 for all normal iterators and is incremented to 0 upon reaching the end.
         begin.indices = {std::numeric_limits<size_t>::max ()};
         // The first two "primes" are dummy values for a more efficient increment algorithm.
-        begin.primes = {std::numeric_limits<T>::max (), std::numeric_limits<T>::max ()};
+        begin.primes = {std::numeric_limits<uint64_t>::max (), std::numeric_limits<uint64_t>::max ()};
         return begin;
     }
 
@@ -160,15 +163,11 @@ public:
         return end;
     }
 
-    template<std::unsigned_integral T>
     friend class BoundedFactorizations;
 
-    template<std::unsigned_integral T>
     friend class BoundedPrimeSetProducts;
 };
 
-template<typename T>
-using BPS = BoundedPrimeSets<T>;
+using BPS = BoundedPrimeSets;
 
-template<typename T>
-using BPSI = BoundedPrimeSets<T>::BoundedPrimeSetIterator;
+using BPSI = BoundedPrimeSets::BoundedPrimeSetIterator;

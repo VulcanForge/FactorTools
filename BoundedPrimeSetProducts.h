@@ -1,6 +1,5 @@
 #pragma once
 
-#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
@@ -10,16 +9,15 @@
 #include "PrimePower.h"
 
 // Represents the set of numbers whose prime factors lie in a given set and which are less than a given upper bound.
-template<std::unsigned_integral T = uint64_t>
 class BoundedPrimeSetProducts
 {
 private:
     // A helper object storing the set of primes.
-    BPSI<T> bpsi;
+    BPSI bpsi;
 
 public:
     // Constructs a BoundedPrimeSetProducts object with the given "set of primes".
-    BoundedPrimeSetProducts (const BPSI<T>& bpsi)
+    BoundedPrimeSetProducts (const BPSI& bpsi)
         : bpsi (bpsi) {}
 
     // Represents an iterator over the numbers represented by a given BoundedPrimeSetProducts object.
@@ -30,10 +28,10 @@ public:
         const BoundedPrimeSetProducts& parent;
 
         // The current number.
-        T n;
+        uint64_t n;
 
         // The prime factorization of 'n'.
-        std::vector<PrimePower<T, uint16_t>> factorization;
+        std::vector<PrimePower<uint64_t, uint16_t>> factorization;
 
         // Constructs a BoundedPrimeSetProductIterator object with the given parent.
         // Most construction is performed in the factory 'Begin' and 'End' methods of BoundedPrimeSetProducts.
@@ -42,19 +40,19 @@ public:
 
     public:
         // Returns an iterator to the beginning of the current prime factorization.
-        std::vector<PrimePower<T, uint16_t>>::const_iterator FactorizationBegin () const
+        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationBegin () const
         {
             return factorization.cbegin ();
         }
 
         // Returns an iterator to the end of the current prime factorization.
-        std::vector<PrimePower<T, uint16_t>>::const_iterator FactorizationEnd () const
+        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationEnd () const
         {
             return factorization.cend ();
         }
 
         // Returns the current number.
-        T N () const
+        uint64_t N () const
         {
             return n;
         }
@@ -134,8 +132,6 @@ public:
     }
 };
 
-template<typename T>
-using BPSP = BoundedPrimeSetProducts<T>;
+using BPSP = BoundedPrimeSetProducts;
 
-template<typename T>
-using BPSPI = BPSP<T>::BoundedPrimeSetProductIterator;
+using BPSPI = BPSP::BoundedPrimeSetProductIterator;

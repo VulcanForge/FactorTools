@@ -1,24 +1,23 @@
 #pragma once
 
-#include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <vector>
 
 #include "BoundedPrimeSets.h"
+#include "Exponent.h"
 #include "PrimePower.h"
 
 // Represents the set of numbers whose prime factors are drawn from a given set and which are less than a given upper bound.
-template<std::unsigned_integral T = uint64_t>
 class BoundedFactorizations
 {
 private:
     // A helper object for constructing factorizations.
-    BPS<T> bps;
+    BPS bps;
 
 public:
     // Constructs a BoundedFactorizations object with the given upper bound.
-    BoundedFactorizations (T upperBound)
+    BoundedFactorizations (uint64_t upperBound)
         : bps (upperBound) {}
 
     // Represents an iterator over the set of numbers represented by a given BoundedFactorizations object.
@@ -29,34 +28,34 @@ public:
         const BoundedFactorizations& parent;
 
         // The current number.
-        T n;
+        uint64_t n;
 
         // A helper object for constructing factorizations.
-        BPSI<T> bpsi;
+        BPSI bpsi;
 
         // The prime factorization of 'n'.
-        std::vector<PrimePower<T, uint16_t>> factorization;
+        std::vector<PrimePower<uint64_t, uint16_t>> factorization;
 
         // Constructs a BoundedFactorizationIterator object with the given parent and "set of primes".
         // Most construction is performed in the factory 'Begin' and 'End' methods of BoundedPrimeSets.
-        BoundedFactorizationIterator (const BoundedFactorizations& parent, const BPSI<T>& bpsi)
+        BoundedFactorizationIterator (const BoundedFactorizations& parent, const BPSI& bpsi)
             : parent (parent), bpsi (bpsi) {}
 
     public:
         // Returns an iterator to the beginning of the current prime factorization.
-        std::vector<PrimePower<T, uint16_t>>::const_iterator FactorizationBegin () const
+        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationBegin () const
         {
             return factorization.cbegin ();
         }
 
         // Returns an iterator to the end of the current prime factorization.
-        std::vector<PrimePower<T, uint16_t>>::const_iterator FactorizationEnd () const
+        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationEnd () const
         {
             return factorization.cend ();
         }
 
         // Returns the current number.
-        T N () const
+        uint64_t N () const
         {
             return n;
         }
@@ -108,6 +107,16 @@ public:
             return old;
         }
 
+        // Returns the value of the Moebius function at 'n'.
+        int16_t MoebiusN () const
+        {
+            for (auto primePower = factorization.cbegin (); primePower != factorization.cend (); primePower++)
+                if (primePower->power > 1)
+                    return 0;
+
+            return (factorization.size () % 2 == 0) ? 1 : -1;
+        }
+
         // WARNING: No comparison of parent object is performed.
         friend bool operator== (const BoundedFactorizationIterator& left, const BoundedFactorizationIterator& right)
         {
@@ -136,8 +145,6 @@ public:
     }
 };
 
-template<typename T>
-using BF = BoundedFactorizations<T>;
+using BF = BoundedFactorizations;
 
-template<typename T>
-using BFI = BoundedFactorizations<T>::BoundedFactorizationIterator;
+using BFI = BoundedFactorizations::BoundedFactorizationIterator;
