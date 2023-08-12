@@ -166,6 +166,16 @@ public:
         return factors->cend ();
     }
 
+    T Radical () const
+    {
+        T radical = 1;
+
+        for (auto primePower : *primeFactors)
+            radical *= primePower.prime;
+
+        return radical;
+    }
+
     // Returns the number of factors of 'n'.
     size_t FactorsCount () const
     {

@@ -82,7 +82,9 @@ int main ()
                 for (uint64_t factor : *(factorization.Factors ()))
                     std::cout << factor << "\n";
 
-                std::cout << "\nSum of proper factors of n: " << factorization.SumProperFactors () << "\n\n";
+                std::cout
+                    << "\nRadical of n: " << factorization.Radical ()
+                    << "\nSum of proper factors of n: " << factorization.SumProperFactors () << "\n\n";
 
                 if (factorization.IsPerfect ())
                     std::cout << n << " is perfect\n\n";
