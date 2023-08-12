@@ -148,6 +148,41 @@ public:
         return primeFactors->size ();
     }
 
+    // Returns the 'prime'-adic valuation of 'n'.
+    uint16_t P_AdicValuation (T prime) const
+    {
+        for (T primePower : primeFactors)
+            if (primePower.prime == prime)
+                return primePower.power;
+
+        return 0;
+    }
+
+    // Returns the 'prime'-adic valuation of 'n'.
+    uint16_t NuP (T prime) const
+    {
+        return P_AdicValuation (prime);
+    }
+
+    // Returns the number of distinct prime factors of 'n'.
+    size_t SmallOmega () const
+    {
+        return primeFactors->size ();
+    }
+
+    // Returns the sum of the exponents of the prime power divisors of 'n'.
+    size_t BigOmega () const
+    {
+        size_t sum = 0;
+
+        for (PrimePower primePower : *primeFactors)
+        {
+            sum += primePower.power;
+        }
+
+        return sum;
+    }
+
     // Returns the list of factors of 'n'.
     std::shared_ptr<const std::vector<T>> Factors () const
     {
@@ -166,26 +201,137 @@ public:
         return factors->cend ();
     }
 
-    T Radical () const
-    {
-        T radical = 1;
-
-        for (auto primePower : *primeFactors)
-            radical *= primePower.prime;
-
-        return radical;
-    }
-
     // Returns the number of factors of 'n'.
     size_t FactorsCount () const
     {
         return factors->size ();
     }
 
-    // Returns the sum of the proper factors of 'n'.
-    T SumProperFactors () const
+    // Returns the number of factors of 'n'.
+    size_t Tau () const
     {
-        return std::accumulate (FactorsBegin (), FactorsEnd () - 1, T (0));
+        return factors->size ();
+    }
+
+    // Returns the sum of the proper factors of 'n'.
+    uint64_t SumProperFactors () const
+    {
+        return std::accumulate (FactorsBegin (), FactorsEnd () - 1, 0ULL);
+    }
+
+    // Returns the sum of the divisors of 'n'.
+    uint64_t Sigma1 () const
+    {
+        return std::accumulate (FactorsBegin (), FactorsEnd (), 0ULL);
+    }
+
+    // Returns the sum of the 'k'-th powers of the divisors of 'n'.
+    uint64_t SigmaK (uint16_t k) const
+    {
+        uint64_t sum = 0;
+
+        for (T factor : *factors)
+            sum += Pow (uint64_t (factor), k);
+
+        return sum;
+    }
+
+    // Returns the number of integers in [0, 'n'] coprime to 'n'.
+    T Totient () const
+    {
+        T totient = n;
+
+        for (PrimePower primePower : *primeFactors)
+            totient = (totient / primePower.prime) * (primePower.prime - 1);
+
+        return totient;
+    }
+
+    // Returns the number of integers in [0, 'n'] coprime to 'n'.
+    T EulerPhi () const
+    {
+        return Totient ();
+    }
+
+    // Returns the radical of 'n'.
+    T Radical () const
+    {
+        T radical = 1;
+
+        for (PrimePower primePower : *primeFactors)
+            radical *= primePower.prime;
+
+        return radical;
+    }
+
+    // Returns 0 if 'n' is not squarefree, 1 if 'n' has an even number of prime factors, and -1 otherwise.
+    int16_t MoebiusFunction () const
+    {
+        int16_t mu = 1;
+
+        for (PrimePower primePower : *primeFactors)
+        {
+            if (primePower.power > 1)
+                return 0;
+            else
+                mu *= -1;
+        }
+
+        return mu;
+    }
+
+    // Returns 0 if 'n' is not squarefree, 1 if 'n' has an even number of prime factors, and -1 otherwise.
+    int16_t Mu () const
+    {
+        return MoebiusFunction ();
+    }
+
+    // Returns -1 to the power of 'BigOmega ()'.
+    int16_t LiouvilleFunction () const
+    {
+        return (BigOmega () % 2 == 0) ? 1 : -1;
+    }
+
+    // Returns -1 to the power of 'BigOmega ()'.
+    int16_t SmallLambda () const
+    {
+        return (BigOmega () % 2 == 0) ? 1 : -1;
+    }
+
+    // Returns the least common multiple of the multiplicative orders of the integers in [0, 'n'] coprime to 'n'.
+    T CarmichaelFunction () const
+    {
+        if (n == 1)
+            return 1;
+
+        T exponent;
+
+        if ((*primeFactors)[0].prime == 2)
+        {
+            if ((*primeFactors)[0].power == 1)
+                exponent = 1;
+            else if ((*primeFactors)[0].power == 2)
+                exponent = 2;
+            else
+                exponent = Pow (2ULL, (*primeFactors)[0].power - 2);
+        }
+
+        for (auto primePower = ++primeFactors->cbegin (), primePowersEnd = primeFactors->cend (); primePower != primePowersEnd; primePower++)
+            exponent = std::lcm (n, Pow (uint64_t (primePower->prime), primePower->power - 1) * (primePower->prime - 1));
+
+        return exponent;
+    }
+
+    // Returns the greatest common divisor of 'n' and 'other.n'.
+    T GCD (const Factorization& other)
+    {
+        return std::gcd (n, other.n);
+    }
+
+    // Returns the lowest common multiple of 'n' and 'other.n'.
+    uint64_t LCM (const Factorization& other)
+    {
+        return std::lcm (n, other.n);
     }
 
     // Returns whether 'n' is prime.
@@ -198,6 +344,32 @@ public:
     bool IsComposite () const
     {
         return FactorsCount () > 2;
+    }
+
+    // Returns whether 'n' is coprime to 'other.n'.
+    bool IsCoprime (const Factorization& other)
+    {
+        return GCD (other) == 1;
+    }
+
+    // Returns whether 'n' is squarefree.
+    bool IsSquarefree () const
+    {
+        for (PrimePower primePower : primeFactors)
+            if (primePower.power > 1)
+                return false;
+
+        return true;
+    }
+
+    // Returns whether 'n' is 'h'-free; that is, whether no 'h'-th power divides 'n'.
+    bool IsHFree (uint16_t h) const
+    {
+        for (PrimePower primePower : primeFactors)
+            if (primePower.power >= h)
+                return false;
+
+        return true;
     }
 
     // Returns whether 'n' is perfect (equal to the sum of its proper factors).

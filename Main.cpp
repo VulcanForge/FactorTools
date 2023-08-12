@@ -81,18 +81,27 @@ int main ()
 
                 for (uint64_t factor : *(factorization.Factors ()))
                     std::cout << factor << "\n";
-
-                std::cout
-                    << "\nRadical of n: " << factorization.Radical ()
-                    << "\nSum of proper factors of n: " << factorization.SumProperFactors () << "\n\n";
-
-                if (factorization.IsPerfect ())
-                    std::cout << n << " is perfect\n\n";
-                else if (factorization.IsDeficient ())
-                    std::cout << n << " is deficient\n\n";
-                else
-                    std::cout << n << " is abundant\n\n";
             }
+
+            std::cout
+                << "\nomega(n): " << factorization.SmallOmega ()
+                << "\nOmega(n): " << factorization.BigOmega ()
+                << "\ntau(n): " << factorization.Tau ()
+                << "\nSum of proper factors of n: " << factorization.SumProperFactors ()
+                << "\nsigma1(n): " << factorization.Sigma1 ()
+                << "\nmu(n): " << factorization.Mu ()
+                << "\nlambda(n): " << factorization.SmallLambda ()
+                << "\nRadical of n: " << factorization.Radical ()
+                << "\nphi(n): " << factorization.EulerPhi ()
+                << "\nCarmichael function of n: " << factorization.CarmichaelFunction ()
+                << "\n\n";
+
+            if (factorization.IsPerfect ())
+                std::cout << n << " is perfect\n\n";
+            else if (factorization.IsDeficient ())
+                std::cout << n << " is deficient\n\n";
+            else
+                std::cout << n << " is abundant\n\n";
         }
         else if (c == '3')
         {
