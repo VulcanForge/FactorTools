@@ -3,7 +3,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <limits>
 #include <numeric>
 #include <stdexcept>
 #include <vector>
@@ -30,8 +29,9 @@ public:
     {
         if (tupleSize == 0)
             throw std::out_of_range ("Empty tuples not implemented.");
+
         // It is convenient to have one prime larger than 'upperBound' to avoid expensive range checking.
-        primePool = *(PrimeSieve<uint64_t> (upperBound + 1550).Primes ());
+        primePool = *(PrimeSieve (upperBound + 1550).Primes ());
 
         if (tupleSize > primePool.size ())
             throw std::out_of_range ("Not enough primes in this range.");
@@ -106,12 +106,6 @@ public:
             return old;
         }
 
-        // Returns the value of the Moebius function at 'n'.
-        int16_t MoebiusN () const
-        {
-            return (parent.tupleSize % 2 == 0) ? 1 : -1;
-        }
-
         // WARNING: No comparison of parent object is performed.
         friend bool operator== (const BoundedPrimeTupleIterator& left, const BoundedPrimeTupleIterator& right)
         {
@@ -125,7 +119,7 @@ public:
     BoundedPrimeTupleIterator Begin () const
     {
         BoundedPrimeTupleIterator begin (*this);
-        begin.indices = std::vector<size_t> (tupleSize);
+        begin.indices = std::vector<uint64_t> (tupleSize);
         // Start with the first 'tupleSize' primes.
         std::iota (begin.indices.begin (), begin.indices.end (), 0ULL);
         begin.primes = std::vector<uint64_t> (primePool.cbegin (), primePool.cbegin () + tupleSize);

@@ -20,7 +20,7 @@ private:
 
     // The inclusive lower bound on the numbers sieved.
     T lowerLimit;
-    
+
     // The exclusive upper bound on the numbers sieved.
     T upperLimit;
 
@@ -34,7 +34,11 @@ public:
     // Constructs a CoprimeSieve over ['lowerLimit', 'upperLimit') with the given obstructions
     // and optionally outputs progress to 'clog'.
     CoprimeSieve (T lowerLimit, T upperLimit, std::shared_ptr<const std::vector<T>> obstructions, bool verbose = false)
-        : lowerLimit (lowerLimit), upperLimit (upperLimit), sieve (upperLimit - lowerLimit, true), obstructions (obstructions), coprimes (std::make_shared<std::vector<T>> ())
+        : lowerLimit (lowerLimit),
+        upperLimit (upperLimit),
+        sieve (upperLimit - lowerLimit, true),
+        obstructions (obstructions),
+        coprimes (std::make_shared<std::vector<T>> ())
     {
         if (verbose)
             for (T obstruction : *obstructions)
@@ -60,8 +64,18 @@ public:
                 coprimes->emplace_back (i);
     }
 
-    CoprimeSieve (T lowerLimit, T upperLimit, std::vector<T>::const_iterator obstructionsBegin, std::vector<T>::const_iterator obstructionsEnd, bool verbose = false)
-        : lowerLimit (lowerLimit), upperLimit (upperLimit), sieve (upperLimit - lowerLimit, true), coprimes (std::make_shared<std::vector<T>> ())
+    CoprimeSieve
+    (
+        T lowerLimit,
+        T upperLimit,
+        std::vector<T>::const_iterator obstructionsBegin,
+        std::vector<T>::const_iterator obstructionsEnd,
+        bool verbose = false
+    )
+        : lowerLimit (lowerLimit),
+        upperLimit (upperLimit),
+        sieve (upperLimit - lowerLimit, true),
+        coprimes (std::make_shared<std::vector<T>> ())
     {
         if (verbose)
             for (auto obstruction = obstructionsBegin; obstruction != obstructionsEnd; obstruction++)
@@ -117,7 +131,7 @@ public:
     {
         return obstructions;
     }
-    
+
     // Returns the number of numbers in ['lowerLimit', 'upperLimit') coprime to every element of 'obstructions'.
     size_t Count () const
     {

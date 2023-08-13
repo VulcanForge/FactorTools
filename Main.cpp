@@ -131,7 +131,7 @@ int main ()
                 std::cin >> limit;
                 std::cout << "\n";
                 BoundedPrimeSets bps (limit);
-                std::cout << "1 = (empty product), mu(1) = 1\n";
+                std::cout << "1 = (empty product)\n";
 
                 for (auto bpsi = ++bps.Begin (), bpsEnd = bps.End (); bpsi != bpsEnd; bpsi++)
                 {
@@ -140,7 +140,7 @@ int main ()
                     for (auto prime = ++bpsi.PrimesBegin (), primesEnd = bpsi.PrimesEnd (); prime != primesEnd; prime++)
                         std::cout << " * " << *prime;
 
-                    std::cout << ", mu(" << bpsi.N () << ") = " << bpsi.MoebiusN () << "\n";
+                    std::cout << "\n";
                 }
 
                 std::cout << "\n";

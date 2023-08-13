@@ -2,7 +2,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <limits>
 #include <vector>
 
 #include "PrimeSieve.h"
@@ -24,7 +23,7 @@ public:
     {
         // 1550 is the largest prime gap in the range [0,2^64).
         // We require at least one prime larger than 'upperBound' to avoid expensive range checking.
-        primePool = *(PrimeSieve<uint64_t> (upperBound + 1550).Primes ());
+        primePool = *(PrimeSieve (upperBound + 1550).Primes ());
     }
 
     // Represents an iterator over the sets of primes represented by a given BoundedPrimeSets object.
@@ -125,12 +124,6 @@ public:
             return old;
         }
 
-        // Returns the value of the Moebius function at 'n'.
-        int16_t MoebiusN () const
-        {
-            return (primes.size () % 2 == 0) ? 1 : -1;
-        }
-
         // WARNING: No comparison of parent object is performed.
         friend bool operator== (const BoundedPrimeSetIterator& left, const BoundedPrimeSetIterator& right)
         {
@@ -148,9 +141,9 @@ public:
         BoundedPrimeSetIterator begin (*this);
         begin.n = 1;
         // The first index is 2^64 - 1 for all normal iterators and is incremented to 0 upon reaching the end.
-        begin.indices = {std::numeric_limits<size_t>::max ()};
+        begin.indices = {UINT64_MAX};
         // The first two "primes" are dummy values for a more efficient increment algorithm.
-        begin.primes = {std::numeric_limits<uint64_t>::max (), std::numeric_limits<uint64_t>::max ()};
+        begin.primes = {UINT64_MAX, UINT64_MAX};
         return begin;
     }
 

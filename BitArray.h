@@ -15,7 +15,7 @@ private:
     size_t count;
 
 public:
-    // Constructs an AtomicSieve with given size and default values.
+    // Constructs a BitArray with given size and default values.
     BitArray (size_t count, bool defaultValue);
 
     // Gets the bit at a given index.

@@ -176,9 +176,7 @@ public:
         size_t sum = 0;
 
         for (PrimePower primePower : *primeFactors)
-        {
             sum += primePower.power;
-        }
 
         return sum;
     }
@@ -352,16 +350,6 @@ public:
         return GCD (other) == 1;
     }
 
-    // Returns whether 'n' is squarefree.
-    bool IsSquarefree () const
-    {
-        for (PrimePower primePower : primeFactors)
-            if (primePower.power > 1)
-                return false;
-
-        return true;
-    }
-
     // Returns whether 'n' is 'h'-free; that is, whether no 'h'-th power divides 'n'.
     bool IsHFree (uint16_t h) const
     {
@@ -370,6 +358,12 @@ public:
                 return false;
 
         return true;
+    }
+
+    // Returns whether 'n' is squarefree.
+    bool IsSquarefree () const
+    {
+        return IsHFree (2);
     }
 
     // Returns whether 'n' is perfect (equal to the sum of its proper factors).

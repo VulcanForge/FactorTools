@@ -31,7 +31,7 @@ public:
         uint64_t n;
 
         // The prime factorization of 'n'.
-        std::vector<PrimePower<uint64_t, uint16_t>> factorization;
+        std::vector<PrimePower<>> factorization;
 
         // Constructs a BoundedPrimeSetProductIterator object with the given parent.
         // Most construction is performed in the factory 'Begin' and 'End' methods of BoundedPrimeSetProducts.
@@ -40,13 +40,13 @@ public:
 
     public:
         // Returns an iterator to the beginning of the current prime factorization.
-        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationBegin () const
+        std::vector<PrimePower<>>::const_iterator FactorizationBegin () const
         {
             return factorization.cbegin ();
         }
 
         // Returns an iterator to the end of the current prime factorization.
-        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationEnd () const
+        std::vector<PrimePower<>>::const_iterator FactorizationEnd () const
         {
             return factorization.cend ();
         }
@@ -65,7 +65,7 @@ public:
             size_t index = factorization.size () - 1;
 
             // Attempt to increment the prime power at 'index' (and end the loop).
-            while (index < factorization.size () && n * factorization[index].prime >= parent.bpsi.parent.upperBound)
+            while (index != SIZE_MAX && n * factorization[index].prime >= parent.bpsi.parent.upperBound)
             {
                 n /= Pow (uint64_t (factorization[index].prime), factorization[index].power - 1);
                 factorization[index].power = 1;
@@ -77,7 +77,7 @@ public:
             }
 
             // Actually increment the prime power at 'index', unless all exponent tuples for the current prime set have been exhausted.
-            if (index < factorization.size ())
+            if (index != SIZE_MAX)
             {
                 n *= factorization[index].prime;
                 factorization[index].power++;

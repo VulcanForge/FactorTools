@@ -34,7 +34,7 @@ public:
         BPSI bpsi;
 
         // The prime factorization of 'n'.
-        std::vector<PrimePower<uint64_t, uint16_t>> factorization;
+        std::vector<PrimePower<>> factorization;
 
         // Constructs a BoundedFactorizationIterator object with the given parent and "set of primes".
         // Most construction is performed in the factory 'Begin' and 'End' methods of BoundedPrimeSets.
@@ -43,13 +43,13 @@ public:
 
     public:
         // Returns an iterator to the beginning of the current prime factorization.
-        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationBegin () const
+        std::vector<PrimePower<>>::const_iterator FactorizationBegin () const
         {
             return factorization.cbegin ();
         }
 
         // Returns an iterator to the end of the current prime factorization.
-        std::vector<PrimePower<uint64_t, uint16_t>>::const_iterator FactorizationEnd () const
+        std::vector<PrimePower<>>::const_iterator FactorizationEnd () const
         {
             return factorization.cend ();
         }
@@ -70,7 +70,7 @@ public:
             size_t index = factorization.size () - 1;
 
             // Attempt to increment the prime power at 'index' (and end the loop).
-            while (index < factorization.size () && n * factorization[index].prime >= parent.bps.upperBound)
+            while (index != SIZE_MAX && n * factorization[index].prime >= parent.bps.upperBound)
             {
                 n /= Pow (uint64_t (factorization[index].prime), factorization[index].power - 1);
                 factorization[index].power = 1;
@@ -82,7 +82,7 @@ public:
             }
 
             // Actually increment the prime power at 'index', unless all exponent tuples for the current prime set have been exhausted.
-            if (index < factorization.size ())
+            if (index != SIZE_MAX)
             {
                 n *= factorization[index].prime;
                 factorization[index].power++;
@@ -105,16 +105,6 @@ public:
             BoundedFactorizationIterator old = *this;
             operator++ ();
             return old;
-        }
-
-        // Returns the value of the Moebius function at 'n'.
-        int16_t MoebiusN () const
-        {
-            for (auto primePower = factorization.cbegin (); primePower != factorization.cend (); primePower++)
-                if (primePower->power > 1)
-                    return 0;
-
-            return (factorization.size () % 2 == 0) ? 1 : -1;
         }
 
         // WARNING: No comparison of parent object is performed.
