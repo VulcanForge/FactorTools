@@ -26,7 +26,7 @@ private:
     std::shared_ptr<std::vector<T>> primes;
 
 public:
-    // Constructs a PrimeSieve over [0, limit) and optionally outputs progress to 'clog'.
+    // Constructs a PrimeSieve over [0, 'limit') and optionally outputs progress to 'clog'.
     PrimeSieve (T limit, bool verbose = false)
         : limit (limit), sieve (limit, true), primes (std::make_shared<std::vector<T>> ())
     {

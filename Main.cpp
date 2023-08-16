@@ -11,6 +11,7 @@
 #include "CoprimeSieve.h"
 #include "Exponent.h"
 #include "Factorization.h"
+#include "FactorSieve.h"
 #include "PrimeCount.h"
 #include "PrimePower.h"
 #include "PrimeSieve.h"
@@ -26,7 +27,8 @@ int main ()
             << "2: Factor\n"
             << "3: Count\n"
             << "4: Iterator\n"
-            << "5: Quit\n";
+            << "5: Factor Sieve\n"
+            << "6: Quit\n";
         std::cin >> c;
         std::cout << "\n";
 
@@ -208,6 +210,19 @@ int main ()
                 std::cout << "Bad option " << c << "\n\n";
         }
         else if (c == '5')
+        {
+            uint64_t limit;
+            std::cout << "Limit: ";
+            std::cin >> limit;
+            std::cout << "\n";
+            FactorSieve sieve (limit);
+
+            for (uint64_t n = 0; n < limit; n++)
+                std::cout << n << ": " << sieve.LeastPrimeFactor (n) << "\n";
+
+            std::cout << "\n";
+        }
+        else if (c == '6')
             break;
         else
             std::cout << "Bad option: " << c << "\n\n";
