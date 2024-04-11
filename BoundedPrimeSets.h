@@ -124,6 +124,13 @@ public:
             return old;
         }
 
+        // Returns the value of the Moebius function at 'n'.
+        int16_t MoebiusN () const
+        {
+            // Efficient (-1)^n algorithm.
+            return (-(primes.size () & 1)) | 1;
+        }
+
         // WARNING: No comparison of parent object is performed.
         friend bool operator== (const BoundedPrimeSetIterator& left, const BoundedPrimeSetIterator& right)
         {

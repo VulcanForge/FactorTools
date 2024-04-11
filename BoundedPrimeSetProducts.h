@@ -97,6 +97,17 @@ public:
             return old;
         }
 
+        // Returns the value of the Moebius function at 'n'.
+        int16_t MoebiusN () const
+        {
+            for (auto primePower = factorization.cbegin (); primePower != factorization.cend (); primePower++)
+                if (primePower->power > 1)
+                    return 0;
+
+            // Efficient (-1)^n algorithm.
+            return (-(factorization.size () & 1)) | 1;
+        }
+
         // WARNING: No comparison of parent object is performed.
         friend bool operator== (const BoundedPrimeSetProductIterator& left, const BoundedPrimeSetProductIterator& right)
         {
