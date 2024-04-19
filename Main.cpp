@@ -3,6 +3,9 @@
 #include <iostream>
 #include <memory>
 
+#include <stdio.h>
+#include <gmp.h>
+
 #include "BitArray.h"
 #include "BoundedFactorizations.h"
 #include "BoundedPrimeSetProducts.h"
@@ -15,6 +18,7 @@
 #include "PrimeCount.h"
 #include "PrimePower.h"
 #include "PrimeSieve.h"
+#include "PrimeTest.h"
 
 int main ()
 {
@@ -28,7 +32,8 @@ int main ()
             << "3: Count\n"
             << "4: Iterator\n"
             << "5: Factor Sieve\n"
-            << "6: Quit\n";
+            << "6: Test\n"
+            << "7: Quit\n";
         std::cin >> c;
         std::cout << "\n";
 
@@ -231,6 +236,26 @@ int main ()
             std::cout << "\n";
         }
         else if (c == '6')
+        {
+            mpz_t n;
+            mpz_init (n);
+            std::cout << "n: ";
+            mpz_inp_str (n, NULL, 10);
+            mpz_t base;
+            mpz_init (base);
+            std::cout << "Base: ";
+            mpz_inp_str (base, NULL, 10);
+            mpz_out_str (NULL, 10, n);
+
+            if (MillerRabinProbabilisticTest (n, base))
+                std::cout << " is probably prime.\n\n";
+            else
+                std::cout << " is composite.\n\n";
+
+            mpz_clear (n);
+            mpz_clear (base);
+        }
+        else if (c == '7')
             break;
         else
             std::cout << "Bad option: " << c << "\n\n";
