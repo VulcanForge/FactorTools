@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "PrimeSieve.h"
+#include <PrimeSieve.h>
 
 // Represents the set of d-tuples of primes whose product is less than a given upper bound.
 class BoundedPrimeTuples

@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "BitArray.h"
+#include <BitArray.h>
 
 // An Eratosthenes prime sieve.
 template<std::unsigned_integral T = uint64_t>

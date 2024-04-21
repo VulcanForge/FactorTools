@@ -8,7 +8,7 @@
 #include <numeric>
 #include <vector>
 
-#include "PrimePower.h"
+#include <PrimePower.h>
 
 // A lookup table of the least prime factor for each positive integer.
 template<std::unsigned_integral T = uint64_t>

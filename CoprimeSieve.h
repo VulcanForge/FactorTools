@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "BitArray.h"
+#include <BitArray.h>
 
 // An Eratosthenes-type sieve to return all numbers in a given range coprime to a given list of obstructions.
 template<std::unsigned_integral T = uint64_t>

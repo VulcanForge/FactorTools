@@ -1,4 +1,4 @@
-#include "Exponent.h"
+#include <Exponent.h>
 
 uint64_t Pow (uint64_t base, uint64_t exponent)
 {

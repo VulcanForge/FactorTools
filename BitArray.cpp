@@ -1,4 +1,4 @@
-#include "BitArray.h"
+#include <BitArray.h>
 
 BitArray::BitArray (size_t count, bool defaultValue)
     : count (count)

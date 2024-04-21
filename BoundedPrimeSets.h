@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "PrimeSieve.h"
+#include <PrimeSieve.h>
 
 // Represents the set of sets of primes whose product is less than a given upper bound.
 class BoundedPrimeSets

@@ -3,7 +3,7 @@
 #include <concepts>
 #include <cstdint>
 
-#include "Exponent.h"
+#include <Exponent.h>
 
 // A prime power.
 template<std::unsigned_integral TPrime = uint64_t, std::unsigned_integral TPower = uint16_t>

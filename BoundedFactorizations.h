@@ -4,9 +4,9 @@
 #include <cstdint>
 #include <vector>
 
-#include "BoundedPrimeSets.h"
-#include "Exponent.h"
-#include "PrimePower.h"
+#include <BoundedPrimeSets.h>
+#include <Exponent.h>
+#include <PrimePower.h>
 
 // Represents the set of numbers whose prime factors are drawn from a given set and which are less than a given upper bound.
 class BoundedFactorizations

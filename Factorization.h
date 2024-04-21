@@ -10,9 +10,9 @@
 #include <numeric>
 #include <vector>
 
-#include "Exponent.h"
-#include "PrimePower.h"
-#include "PrimeSieve.h"
+#include <Exponent.h>
+#include <PrimePower.h>
+#include <PrimeSieve.h>
 
 // A factorization of a natural number.
 template<std::unsigned_integral T = uint64_t>
