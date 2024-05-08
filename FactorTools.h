@@ -2,9 +2,9 @@
 
 #include <BitArray.h>
 #include <BoundedFactorizations.h>
+#include <BoundedPrimeFixedSizeSets.h>
 #include <BoundedPrimeSetProducts.h>
 #include <BoundedPrimeSets.h>
-#include <BoundedPrimeTuples.h>
 #include <CoprimeSieve.h>
 #include <Exponent.h>
 #include <Factorization.h>

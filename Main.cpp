@@ -158,7 +158,7 @@ int main ()
                     std::cout << "1 = (empty product)\n\n";
                 else
                 {
-                    BoundedPrimeTuples bpt (limit, tupleSize);
+                    BoundedPrimeFixedSizeSets bpt (limit, tupleSize);
 
                     for (auto bpti = bpt.Begin (), bptEnd = bpt.End (); bpti != bptEnd; bpti++)
                     {

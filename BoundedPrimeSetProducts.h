@@ -8,7 +8,7 @@
 #include <Exponent.h>
 #include <PrimePower.h>
 
-// Represents the set of numbers whose prime factors lie in a given set and which are less than a given upper bound.
+// Represents the set of numbers, whose prime factors lie in a given set, and which are less than a given upper bound.
 class BoundedPrimeSetProducts
 {
 private:
@@ -61,13 +61,14 @@ public:
         {
             // Algorithm: Attempt to increment the power of the last prime in the factorization.
             // If that is too large, repeatedly reset that power to 1 and attempt to increment the power of the previous prime.
+            // 
             // The index of the prime power to attempt to increment.
             size_t index = factorization.size () - 1;
 
             // Attempt to increment the prime power at 'index' (and end the loop).
             while (index != SIZE_MAX && n * factorization[index].prime >= parent.bpsi.parent.upperBound)
             {
-                n /= Pow (uint64_t (factorization[index].prime), factorization[index].power - 1);
+                n /= Pow (factorization[index].prime, factorization[index].power - 1);
                 factorization[index].power = 1;
                 // If 'index' is 0, it will become UINT64_MAX and be > 'factorization.size ()'.
                 // Then the loop will terminate,

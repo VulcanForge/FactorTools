@@ -8,7 +8,7 @@
 #include <Exponent.h>
 #include <PrimePower.h>
 
-// Represents the set of numbers whose prime factors are drawn from a given set and which are less than a given upper bound.
+// Represents the set of numbers, whose prime factors are drawn from a pool, and which are less than a given upper bound.
 class BoundedFactorizations
 {
 private:
@@ -19,6 +19,10 @@ public:
     // Constructs a BoundedFactorizations object with the given upper bound.
     BoundedFactorizations (uint64_t upperBound)
         : bps (upperBound) {}
+
+    // Constructs a BoundedFactorizations object with the given upper bound and prime pool.
+    BoundedFactorizations (uint64_t upperBound, const std::vector<uint64_t>& primePool)
+        : bps (upperBound, primePool) {}
 
     // Represents an iterator over the set of numbers represented by a given BoundedFactorizations object.
     class BoundedFactorizationIterator
@@ -72,7 +76,7 @@ public:
             // Attempt to increment the prime power at 'index' (and end the loop).
             while (index != SIZE_MAX && n * factorization[index].prime >= parent.bps.upperBound)
             {
-                n /= Pow (uint64_t (factorization[index].prime), factorization[index].power - 1);
+                n /= Pow (factorization[index].prime, factorization[index].power - 1);
                 factorization[index].power = 1;
                 // If 'index' is 0, it will become UINT64_MAX and be > 'factorization.size ()'.
                 // Then the loop will terminate,

@@ -6,24 +6,34 @@
 
 #include <PrimeSieve.h>
 
-// Represents the set of sets of primes whose product is less than a given upper bound.
+// Represents the set of sets of primes, drawn from a pool, whose product is less than a given upper bound.
 class BoundedPrimeSets
 {
 private:
     // The upper bound.
     uint64_t upperBound;
 
-    // The primes less than 'upperBound'.
+    // The pool from which to draw the sets of primes.
     std::vector<uint64_t> primePool;
 
 public:
     // Constructs a BoundedPrimeSets object with the given upper bound.
+    // The pool is constructed as the set of primes < upperBound.
     BoundedPrimeSets (uint64_t upperBound)
         : upperBound (upperBound)
     {
-        // 1550 is the largest prime gap in the range [0,2^64).
-        // We require at least one prime larger than 'upperBound' to avoid expensive range checking.
-        primePool = *(PrimeSieve (upperBound + 1550).Primes ());
+        primePool = *PrimeSieve (upperBound).Primes ();
+        // We require a value >= 'upperBound' at the end (not necessarily prime) to avoid expensive range checking.
+        primePool.emplace_back (upperBound);
+    }
+
+    // Constructs a BoundedPrimeSets object with the given upper bound and pool.
+    BoundedPrimeSets (uint64_t upperBound, const std::vector<uint64_t>& primePool)
+        : upperBound (upperBound)
+    {
+        this->primePool = std::vector (primePool);
+        // We require a value >= 'upperBound' at the end (not necessarily prime) to avoid expensive range checking.
+        this->primePool.emplace_back (upperBound);
     }
 
     // Represents an iterator over the sets of primes represented by a given BoundedPrimeSets object.
@@ -73,7 +83,7 @@ public:
             // If that is too large, attempt to increment the last prime.
             // If that is too large, repeatedly remove it and attempt to increment the new last prime.
 
-            // 'primePool' contains at least one prime larger than 'upperBound',
+            // 'primePool' contains a value >= 'upperBound' at the end,
             // and 'indices.back ()' will never exceed pi(upperBound - 1) - 1,
             // so there is no risk of bad index exceptions.
             uint64_t nextPrime = parent.primePool[indices.back () + 1];
@@ -101,7 +111,7 @@ public:
                 indices.pop_back ();
                 primes.pop_back ();
                 currentPrime = primes.back ();
-                // 'primePool' contains at least one prime larger than 'upperBound',
+                // 'primePool' contains a value >= 'upperBound',
                 // and 'indices.back ()' will never exceed pi(upperBound - 1) - 1,
                 // so there is no risk of bad index exceptions.
                 nextPrime = parent.primePool[indices.back () + 1];
