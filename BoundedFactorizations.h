@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 #include <BoundedPrimeSets.h>
@@ -46,16 +47,10 @@ public:
             : parent (parent), bpsi (bpsi) {}
 
     public:
-        // Returns an iterator to the beginning of the current prime factorization.
-        std::vector<PrimePower<>>::const_iterator FactorizationBegin () const
+        // Returns the current factorization.
+        std::span<const PrimePower<>> Factorization () const
         {
-            return factorization.cbegin ();
-        }
-
-        // Returns an iterator to the end of the current prime factorization.
-        std::vector<PrimePower<>>::const_iterator FactorizationEnd () const
-        {
-            return factorization.cend ();
+            return std::span (factorization.cbegin (), factorization.cend ());
         }
 
         // Returns the current number.
@@ -98,8 +93,8 @@ public:
             n = bpsi.N ();
             factorization.clear ();
 
-            for (auto prime = bpsi.PrimesBegin (), primesEnd = bpsi.PrimesEnd (); prime != primesEnd; prime++)
-                factorization.emplace_back (*prime, 1);
+            for (uint64_t prime : bpsi.Primes ())
+                factorization.emplace_back (prime, 1);
 
             return *this;
         }

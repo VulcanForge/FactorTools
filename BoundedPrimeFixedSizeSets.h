@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <numeric>
+#include <span>
 #include <stdexcept>
 #include <vector>
 
@@ -31,7 +32,8 @@ public:
         if (tupleSize == 0)
             throw std::out_of_range ("Empty tuples not implemented.");
 
-        primePool = *PrimeSieve (upperBound).Primes ();
+        PrimeSieve tempPrimePool (upperBound);
+        primePool = std::vector (tempPrimePool.Primes ().cbegin (), tempPrimePool.Primes ().cend ());
         // We require a value >= 'upperBound' at the end (not necessarily prime) to avoid expensive range checking.
         primePool.emplace_back (upperBound);
 
@@ -76,16 +78,10 @@ public:
             : parent (parent) {}
 
     public:
-        // Returns an iterator to the beginning of the current set of primes.
-        std::vector<uint64_t>::const_iterator PrimesBegin () const
+        // Returns the current set of primes.
+        std::span<const uint64_t> Primes () const
         {
-            return primes.cbegin ();
-        }
-
-        // Returns an iterator to the end of the current set of primes.
-        std::vector<uint64_t>::const_iterator PrimesEnd () const
-        {
-            return primes.cend ();
+            return std::span (primes.cbegin (), primes.cend ());
         }
 
         // Returns the product of the current set of primes.

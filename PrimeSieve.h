@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <iostream>
 #include <iterator>
-#include <memory>
+#include <span>
 #include <vector>
 
 #include <BitArray.h>
@@ -23,17 +23,17 @@ private:
     T limit;
 
     // The prime numbers in [0, 'limit').
-    std::shared_ptr<std::vector<T>> primes;
+    std::vector<T> primes;
 
 public:
     // Constructs a PrimeSieve over [0, 'limit') and optionally outputs progress to 'clog'.
     PrimeSieve (T limit, bool verbose = false)
-        : limit (limit), sieve (limit, true), primes (std::make_shared<std::vector<T>> ())
+        : limit (limit), sieve (limit, true)
     {
         sieve.Reset (0);
         sieve.Reset (1);
         T prime = 2;
-        primes->emplace_back (2);
+        primes.emplace_back (2);
 
         if (verbose)
             while (prime * prime < limit)
@@ -47,7 +47,7 @@ public:
                     if (sieve.Get (i))
                     {
                         prime = i;
-                        primes->emplace_back (i);
+                        primes.emplace_back (i);
                         break;
                     }
             }
@@ -61,52 +61,34 @@ public:
                     if (sieve.Get (i))
                     {
                         prime = i;
-                        primes->emplace_back (i);
+                        primes.emplace_back (i);
                         break;
                     }
             }
 
         for (T i = prime + 1; i < limit; i++)
             if (sieve.Get (i))
-                primes->emplace_back (i);
-    }
-
-    // Returns the exclusive upper bound on the numbers sieved.
-    T Limit () const
-    {
-        return limit;
+                primes.emplace_back (i);
     }
 
     // Returns the list of primes in [0, 'limit').
-    std::shared_ptr<const std::vector<T>> Primes () const
+    std::span<const T> Primes () const
     {
-        return primes;
-    }
-
-    // Returns an iterator to the beginning of the primes in [0, 'limit').
-    std::vector<T>::const_iterator PrimesBegin () const
-    {
-        return primes->cbegin ();
-    }
-
-    // Returns an iterator to the end of the primes in [0, 'limit').
-    std::vector<T>::const_iterator PrimesEnd () const
-    {
-        return primes->cend ();
+        return std::span (primes.cbegin (), primes.cend ());
     }
 
     // Returns the number of primes in [0, 'limit').
     size_t Count () const
     {
-        return primes->size ();
+        return primes.size ();
     }
 
     // Returns the number of primes in [0, 'n'], if 'n' is in [0, 'limit').
     // Behaviour if 'n' >= 'limit' is undefined.
     size_t PrimePi (T n) const
     {
-        auto nextPrime = std::upper_bound (primes->cbegin (), primes->cend (), n);
-        return std::distance (primes->cbegin (), nextPrime);
+        auto nextPrime = std::upper_bound (primes.cbegin (), primes.cend (), n);
+        return std::distance (primes.cbegin (), nextPrime);
     }
 
     // Returns whether 'n' is prime, if 'n' is in [0, 'limit').
@@ -114,25 +96,5 @@ public:
     bool IsPrime (T n) const
     {
         return sieve.Get (n);
-    }
-
-    // BEGIN STL-COMPATIBILITY FUNCTIONS
-
-    // Indexes 'primes'.
-    const T& operator[] (size_t index) const
-    {
-        return (*primes)[index];
-    }
-
-    // Duplicates of 'PrimesBegin' and 'PrimesEnd' for for-each loops.
-
-    std::vector<T>::const_iterator begin () const
-    {
-        return primes->cbegin ();
-    }
-
-    std::vector<T>::const_iterator end () const
-    {
-        return primes->cend ();
     }
 };

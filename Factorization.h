@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <iostream>
-#include <memory>
 #include <numeric>
+#include <span>
 #include <vector>
 
 #include <Exponent.h>
@@ -23,13 +23,13 @@ private:
     T n;
 
     // The prime factors of 'n'.
-    std::shared_ptr<std::vector<PrimePower<T, uint16_t>>> primeFactors;
+    std::vector<PrimePower<T, uint16_t>> primeFactors;
 
     // The factors of 'n'.
-    std::shared_ptr<std::vector<T>> factors;
+    std::vector<T> factors;
 
     // Computes the prime factors of 'n' and optionally outputs progress to 'clog'.
-    void GeneratePrimeFactors (std::shared_ptr<PrimeSieve<T>> sieve, bool verbose)
+    void GeneratePrimeFactors (const PrimeSieve<T>& sieve, bool verbose)
     {
         T sqrt_r = sqrt (n);
         T r = n;
@@ -38,114 +38,108 @@ private:
         {
             std::clog << "\n";
 
-            for (auto prime = sieve->PrimesBegin (), primesEnd = sieve->PrimesEnd (); prime != primesEnd && *prime <= sqrt_r; prime++)
+            for (T prime : sieve.Primes ())
             {
+                if (prime > sqrt_r)
+                    break;
+
                 uint16_t power = 0;
 
-                std::clog << "Trial factoring by " << *prime << "\n";
+                std::clog << "Trial factoring by " << prime << "\n";
 
-                while (r % *prime == 0)
+                while (r % prime == 0)
                 {
-                    r /= *prime;
+                    r /= prime;
                     power++;
                 }
 
                 if (power > 0)
                 {
-                    primeFactors->emplace_back (*prime, power);
+                    primeFactors.emplace_back (prime, power);
                     sqrt_r = sqrt (r);
                 }
             }
         }
         else
-            for (auto prime = sieve->PrimesBegin (), primesEnd = sieve->PrimesEnd (); prime != primesEnd && *prime <= sqrt_r; prime++)
+            for (T prime : sieve.Primes ())
             {
+                if (prime > sqrt_r)
+                    break;
+
                 uint16_t power = 0;
 
-                while (r % *prime == 0)
+                while (r % prime == 0)
                 {
-                    r /= *prime;
+                    r /= prime;
                     power++;
                 }
 
                 if (power > 0)
                 {
-                    primeFactors->emplace_back (*prime, power);
+                    primeFactors.emplace_back (prime, power);
                     sqrt_r = sqrt (r);
                 }
             }
 
         if (r > 1)
-            primeFactors->emplace_back (r, 1);
+            primeFactors.emplace_back (r, 1);
     }
 
     // Computes the factors of 'n'.
     void GenerateFactors ()
     {
-        size_t addressSize = primeFactors->size ();
+        size_t addressSize = primeFactors.size ();
         std::vector<size_t> address (addressSize, 0);
         size_t numberFactors = 1;
 
         for (size_t i = 0; i < addressSize; i++)
-            numberFactors *= ((*primeFactors)[i].power + 1);
+            numberFactors *= (primeFactors[i].power + 1);
 
         for (size_t i = 0; i < numberFactors; i++)
         {
             T factor = 1;
 
             for (size_t j = 0; j < addressSize; j++)
-                factor *= Pow (uint64_t ((*primeFactors)[j].prime), address[j]);
+                factor *= Pow (uint64_t (primeFactors[j].prime), address[j]);
 
-            factors->emplace_back (factor);
+            factors.emplace_back (factor);
 
             for (size_t j = 0; j < addressSize; j++)
             {
-                address[j] = (address[j] + 1) % ((*primeFactors)[j].power + 1);
+                address[j] = (address[j] + 1) % (primeFactors[j].power + 1);
 
                 if (address[j] > 0)
                     break;
             }
         }
 
-        std::sort (factors->begin (), factors->end ());
+        std::sort (factors.begin (), factors.end ());
     }
 
 public:
     // Constructs a Factorization of 'n' and optionally outputs progress to 'clog'.
     Factorization (T n, bool verbose = false)
-        : Factorization (n, std::make_shared <PrimeSieve<T>> (sqrt (n))) {}
+        : Factorization (n, PrimeSieve<T> (sqrt (n)), verbose) {}
 
     // Constructs a Factorization of 'n' using a precomputed list of primes
     // and optionally outputs progress to 'clog'.
-    Factorization (T n, std::shared_ptr<PrimeSieve<T>> sieve, bool verbose = false)
-        : n (n), primeFactors (std::make_shared <std::vector<PrimePower<T, uint16_t>>> ()), factors (std::make_shared<std::vector<T>> ())
+    Factorization (T n, const PrimeSieve<T>& sieve, bool verbose = false)
+        : n (n)
     {
         GeneratePrimeFactors (sieve, verbose);
         GenerateFactors ();
     }
 
     // Returns the list of prime factors of 'n'.
-    std::shared_ptr<const std::vector<PrimePower<T, uint16_t>>> PrimeFactors () const
+    std::span<const PrimePower<T, uint16_t>> PrimeFactors () const
     {
-        return primeFactors;
-    }
-
-    // Returns an iterator to the beginning of the prime factors of 'n'.
-    std::vector<PrimePower<T, uint16_t>>::const_iterator PrimeFactorsBegin () const
-    {
-        return primeFactors->cbegin ();
-    }
-
-    // Returns an iterator to the end of the prime factors of 'n'.
-    std::vector<PrimePower<T, uint16_t>>::const_iterator PrimeFactorsEnd () const
-    {
-        return primeFactors->cend ();
+        return std::span (primeFactors.cbegin (), primeFactors.cend ());
     }
 
     // Returns the number of distinct prime factors of 'n'.
     size_t PrimeFactorsCount () const
     {
-        return primeFactors->size ();
+        return primeFactors.size ();
     }
 
     // Returns the 'prime'-adic valuation of 'n'.
@@ -167,7 +161,7 @@ public:
     // Returns the number of distinct prime factors of 'n'.
     size_t SmallOmega () const
     {
-        return primeFactors->size ();
+        return primeFactors.size ();
     }
 
     // Returns the sum of the exponents of the prime power divisors of 'n'.
@@ -175,52 +169,40 @@ public:
     {
         size_t sum = 0;
 
-        for (PrimePower primePower : *primeFactors)
+        for (PrimePower primePower : primeFactors)
             sum += primePower.power;
 
         return sum;
     }
 
     // Returns the list of factors of 'n'.
-    std::shared_ptr<const std::vector<T>> Factors () const
+    std::span<const T> Factors () const
     {
-        return factors;
-    }
-
-    // Returns an iterator to the beginning of the factors of 'n'.
-    std::vector<T>::const_iterator FactorsBegin () const
-    {
-        return factors->cbegin ();
-    }
-
-    // Returns an iterator to the end of the prime factors of 'n'.
-    std::vector<T>::const_iterator FactorsEnd () const
-    {
-        return factors->cend ();
+        return std::span (factors.cbegin (), factors.cend ());
     }
 
     // Returns the number of factors of 'n'.
     size_t FactorsCount () const
     {
-        return factors->size ();
+        return factors.size ();
     }
 
     // Returns the number of factors of 'n'.
     size_t Tau () const
     {
-        return factors->size ();
+        return factors.size ();
     }
 
     // Returns the sum of the proper factors of 'n'.
     uint64_t SumProperFactors () const
     {
-        return std::accumulate (FactorsBegin (), FactorsEnd () - 1, 0ULL);
+        return std::accumulate (factors.cbegin (), factors.cend () - 1, 0ULL);
     }
 
     // Returns the sum of the divisors of 'n'.
     uint64_t Sigma1 () const
     {
-        return std::accumulate (FactorsBegin (), FactorsEnd (), 0ULL);
+        return std::accumulate (factors.cbegin (), factors.cend (), 0ULL);
     }
 
     // Returns the sum of the 'k'-th powers of the divisors of 'n'.
@@ -228,7 +210,7 @@ public:
     {
         uint64_t sum = 0;
 
-        for (T factor : *factors)
+        for (T factor : factors)
             sum += Pow (uint64_t (factor), k);
 
         return sum;
@@ -239,7 +221,7 @@ public:
     {
         T totient = n;
 
-        for (PrimePower primePower : *primeFactors)
+        for (PrimePower primePower : primeFactors)
             totient = (totient / primePower.prime) * (primePower.prime - 1);
 
         return totient;
@@ -256,7 +238,7 @@ public:
     {
         T radical = 1;
 
-        for (PrimePower primePower : *primeFactors)
+        for (PrimePower primePower : primeFactors)
             radical *= primePower.prime;
 
         return radical;
@@ -265,17 +247,12 @@ public:
     // Returns 0 if 'n' is not squarefree, 1 if 'n' has an even number of prime factors, and -1 otherwise.
     int16_t MoebiusFunction () const
     {
-        int16_t mu = 1;
-
-        for (PrimePower primePower : *primeFactors)
-        {
+        for (PrimePower primePower : primeFactors)
             if (primePower.power > 1)
                 return 0;
-            else
-                mu *= -1;
-        }
 
-        return mu;
+        // Efficient (-1)^n algorithm.
+        return (-(primeFactors.size () & 1)) | 1;
     }
 
     // Returns 0 if 'n' is not squarefree, 1 if 'n' has an even number of prime factors, and -1 otherwise.
@@ -287,13 +264,15 @@ public:
     // Returns -1 to the power of 'BigOmega ()'.
     int16_t LiouvilleFunction () const
     {
-        return (BigOmega () % 2 == 0) ? 1 : -1;
+        // Efficient (-1)^n algorithm.
+        return (-(BigOmega () & 1)) | 1;
     }
 
     // Returns -1 to the power of 'BigOmega ()'.
     int16_t SmallLambda () const
     {
-        return (BigOmega () % 2 == 0) ? 1 : -1;
+        // Efficient (-1)^n algorithm.
+        return (-(BigOmega () & 1)) | 1;
     }
 
     // Returns the least common multiple of the multiplicative orders of the integers in [0, 'n'] coprime to 'n'.
@@ -304,18 +283,25 @@ public:
 
         T exponent;
 
-        if ((*primeFactors)[0].prime == 2)
+        if (primeFactors[0].prime == 2)
         {
-            if ((*primeFactors)[0].power == 1)
+            if (primeFactors[0].power == 1)
                 exponent = 1;
-            else if ((*primeFactors)[0].power == 2)
+            else if (primeFactors[0].power == 2)
                 exponent = 2;
             else
-                exponent = Pow (2ULL, (*primeFactors)[0].power - 2);
-        }
+                exponent = Pow (2ULL, (primeFactors)[0].power - 2);
 
-        for (auto primePower = ++primeFactors->cbegin (), primePowersEnd = primeFactors->cend (); primePower != primePowersEnd; primePower++)
-            exponent = std::lcm (n, Pow (uint64_t (primePower->prime), primePower->power - 1) * (primePower->prime - 1));
+            for (auto primePower = ++primeFactors.cbegin (); primePower != primeFactors.cend (); primePower++)
+                exponent = std::lcm (exponent, Pow (uint64_t (primePower->prime), primePower->power - 1) * (primePower->prime - 1));
+        }
+        else
+        {
+            exponent = 1;
+
+            for (auto primePower : primeFactors)
+                exponent = std::lcm (exponent, Pow (uint64_t (primePower.prime), primePower.power - 1) * (primePower.prime - 1));
+        }
 
         return exponent;
     }

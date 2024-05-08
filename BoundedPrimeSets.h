@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <vector>
 
 #include <PrimeSieve.h>
@@ -22,7 +23,8 @@ public:
     BoundedPrimeSets (uint64_t upperBound)
         : upperBound (upperBound)
     {
-        primePool = *PrimeSieve (upperBound).Primes ();
+        PrimeSieve tempPrimePool (upperBound);
+        primePool = std::vector (tempPrimePool.Primes ().cbegin (), tempPrimePool.Primes ().cend ());
         // We require a value >= 'upperBound' at the end (not necessarily prime) to avoid expensive range checking.
         primePool.emplace_back (upperBound);
     }
@@ -58,17 +60,10 @@ public:
             : parent (parent) {}
 
     public:
-        // Returns an iterator to the beginning of the current set of primes.
-        std::vector<uint64_t>::const_iterator PrimesBegin () const
+        // Returns the current set of primes.
+        std::span<const uint64_t> Primes () const
         {
-            // The first two "primes" are dummy values for a more efficient increment algorithm.
-            return primes.cbegin () + 2;
-        }
-
-        // Returns an iterator to the end of the current set of primes.
-        std::vector<uint64_t>::const_iterator PrimesEnd () const
-        {
-            return primes.cend ();
+            return std::span (primes.cbegin () + 2, primes.cend ());
         }
 
         // Returns the product of the current set of primes.

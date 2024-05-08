@@ -59,12 +59,6 @@ public:
             }
     }
 
-    // Returns the exclusive upper bound on the lookup table.
-    T Limit () const
-    {
-        return limit;
-    }
-
     // Returns the least prime factor of 'n', if 'n' is in [0, 'limit').
     // Behaviour if 'n' >= 'limit' is undefined.
     T LeastPrimeFactor (T n) const

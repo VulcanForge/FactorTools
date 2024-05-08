@@ -48,7 +48,7 @@ int main ()
                 else
                 {
                     for (size_t i = index; i < index + 10 && i < count; i++)
-                        std::cout << sieve[i] << "\n";
+                        std::cout << sieve.Primes ()[i] << "\n";
 
                     std::cout << "\n";
                 }
@@ -68,12 +68,12 @@ int main ()
             {
                 std::cout << "Prime factors of " << n << "\n\n";
 
-                for (PrimePower primePower : *(factorization.PrimeFactors ()))
+                for (PrimePower primePower : factorization.PrimeFactors ())
                     std::cout << primePower.prime << "^" << primePower.power << "\n";
 
                 std::cout << "\nFactors of " << n << "\n\n";
 
-                for (uint64_t factor : *(factorization.Factors ()))
+                for (uint64_t factor : factorization.Factors ())
                     std::cout << factor << "\n";
             }
 
@@ -131,9 +131,9 @@ int main ()
 
                 for (auto bpsi = ++bps.Begin (), bpsEnd = bps.End (); bpsi != bpsEnd; bpsi++)
                 {
-                    std::cout << bpsi.N () << " = " << *(bpsi.PrimesBegin ());
+                    std::cout << bpsi.N () << " = " << bpsi.Primes ()[0];
 
-                    for (auto prime = ++bpsi.PrimesBegin (), primesEnd = bpsi.PrimesEnd (); prime != primesEnd; prime++)
+                    for (auto prime = ++bpsi.Primes ().cbegin (); prime != bpsi.Primes ().cend (); prime++)
                         std::cout << " * " << *prime;
 
                     std::cout
@@ -158,18 +158,18 @@ int main ()
                     std::cout << "1 = (empty product)\n\n";
                 else
                 {
-                    BoundedPrimeFixedSizeSets bpt (limit, tupleSize);
+                    BoundedPrimeFixedSizeSets bpfss (limit, tupleSize);
 
-                    for (auto bpti = bpt.Begin (), bptEnd = bpt.End (); bpti != bptEnd; bpti++)
+                    for (auto bffssi = bpfss.Begin (), bptEnd = bpfss.End (); bffssi != bptEnd; bffssi++)
                     {
-                        std::cout << bpti.N () << " = " << *(bpti.PrimesBegin ());
+                        std::cout << bffssi.N () << " = " << bffssi.Primes ()[0];
 
-                        for (auto prime = ++bpti.PrimesBegin (), primesEnd = bpti.PrimesEnd (); prime != primesEnd; prime++)
+                        for (auto prime = ++bffssi.Primes ().cbegin (); prime != bffssi.Primes ().cend (); prime++)
                             std::cout << " * " << *prime;
 
                         std::cout
                             << "\n"
-                            << "mu(" << bpti.N () << ") = " << bpti.MoebiusN () << "\n";
+                            << "mu(" << bffssi.N () << ") = " << bffssi.MoebiusN () << "\n";
                     }
 
                     std::cout << "\n";
@@ -186,12 +186,12 @@ int main ()
 
                 for (auto bfi = ++bf.Begin (), bfEnd = bf.End (); bfi != bfEnd; bfi++)
                 {
-                    std::cout << bfi.N () << " = " << bfi.FactorizationBegin ()->prime;
+                    std::cout << bfi.N () << " = " << bfi.Factorization ()[0].prime;
 
-                    if (bfi.FactorizationBegin ()->power > 1)
-                        std::cout << "^" << bfi.FactorizationBegin ()->power;
+                    if (bfi.Factorization ()[0].power > 1)
+                        std::cout << "^" << bfi.Factorization ()[0].power;
 
-                    for (auto primePower = ++bfi.FactorizationBegin (), primePowersEnd = bfi.FactorizationEnd (); primePower != primePowersEnd; primePower++)
+                    for (auto primePower = ++bfi.Factorization ().cbegin (); primePower != bfi.Factorization ().cend (); primePower++)
                     {
                         std::cout << " * " << primePower->prime;
 
