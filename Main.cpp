@@ -224,23 +224,18 @@ int main ()
         }
         else if (c == '6')
         {
-            mpz_t n;
-            mpz_init (n);
+            mpz_class n;
             std::cout << "n: ";
-            mpz_inp_str (n, NULL, 10);
-            mpz_t base;
-            mpz_init (base);
+            std::cin >> n;
+            mpz_class base;
             std::cout << "Base: ";
-            mpz_inp_str (base, NULL, 10);
-            mpz_out_str (NULL, 10, n);
+            std::cin >> base;
+            std::cout << n;
 
             if (MillerRabinProbabilisticTest (n, base))
                 std::cout << " is probably prime.\n\n";
             else
                 std::cout << " is composite.\n\n";
-
-            mpz_clear (n);
-            mpz_clear (base);
         }
         else if (c == '7')
             break;

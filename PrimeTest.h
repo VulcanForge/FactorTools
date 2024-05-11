@@ -4,6 +4,6 @@
 
 #include <gmpxx.h>
 
-bool FermatProbabilisticTest (const mpz_t n, const mpz_t base);
+bool FermatProbabilisticTest (const mpz_class n, const mpz_class base);
 
-bool MillerRabinProbabilisticTest (const mpz_t n, const mpz_t base);
+bool MillerRabinProbabilisticTest (const mpz_class n, const mpz_class base);
