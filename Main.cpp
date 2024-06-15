@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <memory>
@@ -47,8 +46,8 @@ int main ()
                     std::cout << "Index too large\n\n";
                 else
                 {
-                    for (size_t i = index; i < index + 10 && i < count; i++)
-                        std::cout << sieve.Primes ()[i] << "\n";
+                    for (size_t i = index; i < index + 10 && i < count; ++i)
+                        std::cout << (*sieve.Primes ())[i] << "\n";
 
                     std::cout << "\n";
                 }
@@ -68,12 +67,12 @@ int main ()
             {
                 std::cout << "Prime factors of " << n << "\n\n";
 
-                for (PrimePower primePower : factorization.PrimeFactors ())
+                for (const auto& primePower : *factorization.PrimeFactors ())
                     std::cout << primePower.prime << "^" << primePower.power << "\n";
 
                 std::cout << "\nFactors of " << n << "\n\n";
 
-                for (uint64_t factor : factorization.Factors ())
+                for (uint64_t factor : *factorization.Factors ())
                     std::cout << factor << "\n";
             }
 
@@ -113,7 +112,7 @@ int main ()
         {
             std::cout
                 << "1: Prime Sets\n"
-                << "2: Prime Tuples\n"
+                << "2: Fixed-Size Prime Sets\n"
                 << "3: Factorizations\n";
             std::cin >> c;
             std::cout << "\n";
@@ -123,25 +122,30 @@ int main ()
                 uint64_t limit;
                 std::cout << "Limit: ";
                 std::cin >> limit;
-                std::cout << "\n";
-                BoundedPrimeSets bps (limit);
                 std::cout
+                    << "\n"
                     << "1 = (empty product)\n"
                     << "mu(1) = 1\n";
+                BoundedPrimeSetIterator bpsi (limit);
+                size_t counter = 1;
 
-                for (auto bpsi = ++bps.Begin (), bpsEnd = bps.End (); bpsi != bpsEnd; bpsi++)
+                for (++bpsi; !bpsi.IsEnd (); ++bpsi)
                 {
-                    std::cout << bpsi.N () << " = " << bpsi.Primes ()[0];
+                    auto primes = bpsi.Primes ();
+                    std::cout << bpsi.N () << " = " << (*primes)[0];
 
-                    for (auto prime = ++bpsi.Primes ().cbegin (); prime != bpsi.Primes ().cend (); prime++)
+                    for (auto prime = primes->cbegin () + 1; prime != primes->cend (); ++prime)
                         std::cout << " * " << *prime;
 
                     std::cout
                         << "\n"
                         << "mu(" << bpsi.N () << ") = " << bpsi.MoebiusN () << "\n";
+                    ++counter;
                 }
 
-                std::cout << "\n";
+                std::cout
+                    << "\n"
+                    << "Counted " << counter << " prime sets.\n\n";
             }
             else if (c == '2')
             {
@@ -149,30 +153,33 @@ int main ()
                 std::cout << "Limit: ";
                 std::cin >> limit;
                 std::cout << "\n";
-                uint16_t tupleSize;
-                std::cout << "Tuple size: ";
-                std::cin >> tupleSize;
+                uint32_t setSize;
+                std::cout << "Set size: ";
+                std::cin >> setSize;
                 std::cout << "\n";
 
-                if (tupleSize == 0)
+                if (setSize == 0)
                     std::cout << "1 = (empty product)\n\n";
                 else
                 {
-                    BoundedPrimeFixedSizeSets bpfss (limit, tupleSize);
+                    BoundedPrimeFixedSizeSetIterator bpfssi (limit, setSize);
+                    size_t counter = 0;
 
-                    for (auto bffssi = bpfss.Begin (), bptEnd = bpfss.End (); bffssi != bptEnd; bffssi++)
+                    for (; !bpfssi.IsEnd (); ++bpfssi)
                     {
-                        std::cout << bffssi.N () << " = " << bffssi.Primes ()[0];
+                        auto primes = bpfssi.Primes ();
+                        std::cout << bpfssi.N () << " = " << (*primes)[0];
 
-                        for (auto prime = ++bffssi.Primes ().cbegin (); prime != bffssi.Primes ().cend (); prime++)
+                        for (auto prime = primes->cbegin () + 1; prime != primes->cend (); ++prime)
                             std::cout << " * " << *prime;
 
-                        std::cout
-                            << "\n"
-                            << "mu(" << bffssi.N () << ") = " << bffssi.MoebiusN () << "\n";
+                        std::cout << "\n";
+                        ++counter;
                     }
 
-                    std::cout << "\n";
+                    std::cout
+                        << "\n"
+                        << "Counted " << counter << " fixed-size prime sets.\n\n";
                 }
             }
             else if (c == '3')
@@ -181,17 +188,21 @@ int main ()
                 std::cout << "Limit: ";
                 std::cin >> limit;
                 std::cout << "\n";
-                BoundedFactorizations bf (limit);
+                BoundedFactorizationIterator bfi (limit);
                 std::cout << "1 = (empty product)\n";
+                size_t counter = 1;
 
-                for (auto bfi = ++bf.Begin (), bfEnd = bf.End (); bfi != bfEnd; bfi++)
+                for (++bfi; !bfi.IsEnd (); ++bfi)
                 {
-                    std::cout << bfi.N () << " = " << bfi.Factorization ()[0].prime;
+                    auto factorization = bfi.Factorization ();
+                    std::cout << bfi.N () << " = " << (*factorization)[0].prime;
 
-                    if (bfi.Factorization ()[0].power > 1)
-                        std::cout << "^" << bfi.Factorization ()[0].power;
+                    if ((*factorization)[0].power > 1)
+                        std::cout << "^" << (*factorization)[0].power;
 
-                    for (auto primePower = ++bfi.Factorization ().cbegin (); primePower != bfi.Factorization ().cend (); primePower++)
+                    for (auto primePower = factorization->cbegin () + 1;
+                        primePower != factorization->cend ();
+                        ++primePower)
                     {
                         std::cout << " * " << primePower->prime;
 
@@ -202,9 +213,12 @@ int main ()
                     std::cout
                         << "\n"
                         << "mu(" << bfi.N () << ") = " << bfi.MoebiusN () << "\n";
+                    ++counter;
                 }
 
-                std::cout << "\n";
+                std::cout
+                    << "\n"
+                    << "Counted " << counter << " factorizations.\n\n";
             }
             else
                 std::cout << "Bad option " << c << "\n\n";
@@ -217,7 +231,7 @@ int main ()
             std::cout << "\n";
             FactorSieve sieve (limit);
 
-            for (uint64_t n = 0; n < limit; n++)
+            for (uint64_t n = 0; n < limit; ++n)
                 std::cout << n << ": " << sieve.LeastPrimeFactor (n) << "\n";
 
             std::cout << "\n";

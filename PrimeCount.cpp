@@ -1,7 +1,7 @@
 #include <PrimeCount.h>
 
 #include <cmath>
-#include <numbers>
+#include <cmath>
 
 uint64_t LegendreCount (uint64_t n)
 {
@@ -10,21 +10,6 @@ uint64_t LegendreCount (uint64_t n)
 
 uint64_t LiCount (uint64_t n)
 {
-    double logn = log (n);
-    double li = std::numbers::egamma + log (logn);
-    double term;
-    double i = 1;
-    double powlog = logn;
-    double ifactorial = 1;
-
-    do
-    {
-        term = powlog / (ifactorial * i);
-        li += term;
-        i++;
-        powlog *= logn;
-        ifactorial *= i;
-    } while (li + term != li);
-
-    return li;
+    // Wikipedia assures me that this is correct.
+    return std::expint (log (n));
 }

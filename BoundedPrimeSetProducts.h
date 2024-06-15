@@ -1,144 +1,53 @@
 #pragma once
 
-#include <cstddef>
 #include <cstdint>
-#include <span>
+#include <cstddef>
+#include <memory>
 #include <vector>
 
-#include <BoundedPrimeSets.h>
-#include <Exponent.h>
-#include <PrimePower.h>
+#include "PrimePower.h"
 
-// Represents the set of numbers, whose prime factors lie in a given set, and which are less than a given upper bound.
-class BoundedPrimeSetProducts
+using primes_t = std::vector<uint64_t>;
+using factorization_t = std::vector<PrimePower<uint64_t, uint32_t>>;
+
+// Iterates through a specified set of prime factorizations.
+// The set is constrained by a predetermined pool of primes,
+// for each of which the factorization must have exponent at least 1,
+// and by an upper bound on the integer corresponding to each factorization.
+class BoundedPrimeSetProductIterator
 {
 private:
-    // A helper object storing the set of primes.
-    BPSI bpsi;
+    // The upper bound.
+    uint64_t upperBound;
+
+    // The prime pool.
+    std::shared_ptr<const primes_t> primePool;
+
+    // The current factorization.
+    std::shared_ptr<factorization_t> factorization;
+
+    // The integer corresponding to the current factorization.
+    uint64_t n;
+
+    // Whether the iterator is in the end state.
+    bool isEnd;
 
 public:
-    // Constructs a BoundedPrimeSetProducts object with the given "set of primes".
-    BoundedPrimeSetProducts (const BPSI& bpsi)
-        : bpsi (bpsi) {}
+    // Constructs a BoundedPrimeSetProductIterator with given upper bound and prime pool.
+    BoundedPrimeSetProductIterator (uint64_t upperBound, std::shared_ptr<const primes_t> primePool);
 
-    // Represents an iterator over the numbers represented by a given BoundedPrimeSetProducts object.
-    class BoundedPrimeSetProductIterator
-    {
-    private:
-        // The BoundedPrimeSetProducts object.
-        const BoundedPrimeSetProducts& parent;
+    // Returns the current factorization.
+    std::shared_ptr<const factorization_t> Factorization () const;
 
-        // The current number.
-        uint64_t n;
+    // Returns the integer corresponding to the current factorization.
+    uint64_t N () const;
 
-        // The prime factorization of 'n'.
-        std::vector<PrimePower<>> factorization;
+    // Moves the iterator forward one step.
+    void operator++ ();
 
-        // Constructs a BoundedPrimeSetProductIterator object with the given parent.
-        // Most construction is performed in the factory 'Begin' and 'End' methods of BoundedPrimeSetProducts.
-        BoundedPrimeSetProductIterator (const BoundedPrimeSetProducts& parent)
-            : parent (parent) {}
+    // Returns whether the iterator is in the end state.
+    bool IsEnd () const;
 
-    public:
-        // Returns the current prime factorization.
-        std::span<const PrimePower<>> Factorization () const
-        {
-            return std::span (factorization.cbegin (), factorization.cend ());
-        }
-
-        // Returns the current number.
-        uint64_t N () const
-        {
-            return n;
-        }
-
-        BoundedPrimeSetProductIterator& operator++ ()
-        {
-            // Algorithm: Attempt to increment the power of the last prime in the factorization.
-            // If that is too large, repeatedly reset that power to 1 and attempt to increment the power of the previous prime.
-            // 
-            // The index of the prime power to attempt to increment.
-            size_t index = factorization.size () - 1;
-
-            // Attempt to increment the prime power at 'index' (and end the loop).
-            while (index != SIZE_MAX && n * factorization[index].prime >= parent.bpsi.parent.upperBound)
-            {
-                n /= Pow (factorization[index].prime, factorization[index].power - 1);
-                factorization[index].power = 1;
-                // If 'index' is 0, it will become UINT64_MAX and be > 'factorization.size ()'.
-                // Then the loop will terminate,
-                // the next conditional will recognize that all exponent tuples have been exhausted,
-                // and the prime set itself will "increment".
-                index--;
-            }
-
-            // Actually increment the prime power at 'index', unless all exponent tuples for the current prime set have been exhausted.
-            if (index != SIZE_MAX)
-            {
-                n *= factorization[index].prime;
-                factorization[index].power++;
-                return *this;
-            }
-
-            // All exponent tuples for the current prime set have been exhausted.
-            // Move into the end iterator state.
-            n = 0;
-            return *this;
-        }
-
-        BoundedPrimeSetProductIterator operator++ (int)
-        {
-            BoundedPrimeSetProductIterator old = *this;
-            operator++ ();
-            return old;
-        }
-
-        // Returns the value of the Moebius function at 'n'.
-        int16_t MoebiusN () const
-        {
-            for (auto primePower = factorization.cbegin (); primePower != factorization.cend (); primePower++)
-                if (primePower->power > 1)
-                    return 0;
-
-            // Efficient (-1)^n algorithm.
-            return (-(factorization.size () & 1)) | 1;
-        }
-
-        // WARNING: No comparison of parent object is performed.
-        friend bool operator== (const BoundedPrimeSetProductIterator& left, const BoundedPrimeSetProductIterator& right)
-        {
-            return left.n == right.n;
-        }
-
-        friend class BoundedPrimeSetProducts;
-    };
-
-    // Returns an iterator to the beginning of the prescribed set.
-    BoundedPrimeSetProductIterator Begin () const
-    {
-        BoundedPrimeSetProductIterator begin (*this);
-        begin.n = 1;
-
-        // Initialize all exponents to 1.
-        for (uint64_t prime : bpsi.Primes ())
-        {
-            begin.factorization.emplace_back (prime, 1);
-            begin.n *= prime;
-        }
-
-        return begin;
-    }
-
-    // Returns an iterator to the end of the prescribed set.
-    BoundedPrimeSetProductIterator End () const
-    {
-        BoundedPrimeSetProductIterator end (*this);
-        end.n = 0;
-        // There is no need to initialize 'factorization' as it is not considered in iterator comparison.
-        return end;
-    }
+    // Returns the Moebius function of the integer corresponding to the current factorization.
+    int32_t MoebiusN () const;
 };
-
-using BPSP = BoundedPrimeSetProducts;
-
-using BPSPI = BPSP::BoundedPrimeSetProductIterator;
