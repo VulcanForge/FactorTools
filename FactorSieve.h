@@ -123,7 +123,7 @@ public:
             T factor = 1;
 
             for (std::size_t j = 0; j < addressSize; ++j)
-                factor *= Pow (std::uint64_t (primeFactors[j].prime), address[j]);
+                factor *= IntegerPow (std::uint64_t (primeFactors[j].prime), address[j]);
 
             factors.emplace_back (factor);
 

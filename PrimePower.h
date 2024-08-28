@@ -22,6 +22,6 @@ struct PrimePower
     // Returns the value of the prime power.
     std::uint64_t N () const
     {
-        return Pow (std::uint64_t (prime), power);
+        return IntegerPow (std::uint64_t (prime), power);
     }
 };

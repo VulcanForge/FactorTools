@@ -32,7 +32,7 @@ private:
     void GeneratePrimeFactors (std::shared_ptr<const PrimeSieve<T>> sieve, bool verbose)
     {
         // Standard trial factoring algorithm.
-        T sqrt_r = T (std::sqrt (n));
+        T sqrt_r = std::sqrt (n);
         T r = n;
 
         if (verbose)
@@ -57,7 +57,7 @@ private:
                 if (power > 0)
                 {
                     primeFactors->emplace_back (prime, power);
-                    sqrt_r = T (std::sqrt (r));
+                    sqrt_r = std::sqrt (r);
                 }
             }
         }
@@ -78,7 +78,7 @@ private:
                 if (power > 0)
                 {
                     primeFactors->emplace_back (prime, power);
-                    sqrt_r = T (std::sqrt (r));
+                    sqrt_r = std::sqrt (r);
                 }
             }
 
@@ -103,7 +103,7 @@ private:
             T factor = 1;
 
             for (std::size_t j = 0; j < addressSize; ++j)
-                factor *= Pow (std::uint64_t ((*primeFactors)[j].prime), address[j]);
+                factor *= IntegerPow ((*primeFactors)[j].prime, address[j]);
 
             factors->emplace_back (factor);
 
@@ -123,7 +123,7 @@ private:
 public:
     // Constructs a Factorization of 'n' and optionally outputs progress to 'clog'.
     Factorization (T n, bool verbose = false)
-        : Factorization (n, std::make_shared<const PrimeSieve<T>> (T (std::sqrt (n)), verbose), verbose) {}
+        : Factorization (n, std::make_shared<const PrimeSieve<T>> (std::sqrt (n), verbose), verbose) {}
 
     // Constructs a Factorization of 'n' using a precomputed list of primes
     // and optionally outputs progress to 'clog'.
@@ -222,7 +222,7 @@ public:
         std::uint64_t sum = 0;
 
         for (T factor : *factors)
-            sum += Pow (std::uint64_t (factor), k);
+            sum += IntegerPow (factor, k);
 
         return sum;
     }
@@ -303,13 +303,13 @@ public:
             else if ((*primeFactors)[0].power == 2)
                 exponent = 2;
             else
-                exponent = Pow (2ULL, (*primeFactors)[0].power - 2);
+                exponent = IntegerPow (2, (*primeFactors)[0].power - 2);
 
             for (auto primePower = primeFactors->cbegin () + 1; primePower != primeFactors->cend (); ++primePower)
                 exponent = std::lcm
                 (
                     exponent,
-                    Pow (std::uint64_t (primePower->prime), primePower->power - 1) * (primePower->prime - 1)
+                    IntegerPow (primePower->prime, primePower->power - 1) * (primePower->prime - 1)
                 );
         }
         else
@@ -320,7 +320,7 @@ public:
                 exponent = std::lcm
                 (
                     exponent,
-                    Pow (std::uint64_t (primePower.prime), primePower.power - 1) * (primePower.prime - 1)
+                    IntegerPow (primePower.prime, primePower.power - 1) * (primePower.prime - 1)
                 );
         }
 

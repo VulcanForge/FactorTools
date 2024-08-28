@@ -2,4 +2,6 @@
 *.sln
 *.vcxproj*
 x64/
-
+*.a
+*.o
+*.exe

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-std::uint64_t Pow (std::uint64_t base, std::uint64_t exponent)
+std::uint64_t IntegerPow (std::uint64_t base, std::uint64_t exponent)
 {
     // Standard binary exponential algorithm.
     std::uint64_t power = 1;
@@ -19,7 +19,7 @@ std::uint64_t Pow (std::uint64_t base, std::uint64_t exponent)
     return power;
 }
 
-double Pow (double base, std::uint64_t exponent)
+double DoublePow (double base, std::uint64_t exponent)
 {
     // Standard binary exponentiation algorithm.
     double power = 1;

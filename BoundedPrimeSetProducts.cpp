@@ -71,7 +71,7 @@ void BoundedPrimeSetProductIterator::operator++ ()
         // The current guess for 'toIncrement' is incorrect.
         // Step up one level in the search tree by resetting the exponent
         // at 'toIncrement' to 1 and decrementing 'toIncrement'.
-        n /= Pow (primePower.prime, primePower.power - 1);
+        n /= IntegerPow (primePower.prime, primePower.power - 1);
         primePower.power = 1;
         --toIncrement;
     }
