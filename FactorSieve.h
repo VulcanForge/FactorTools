@@ -1,11 +1,14 @@
 #pragma once
 
+#include <algorithm>
+#include <cstddef>
 #include <concepts>
 #include <cstdint>
 #include <iostream>
 #include <vector>
 
-#include <PrimePower.h>
+#include "Exponent.h"
+#include "PrimePower.h"
 
 // A Eratosthenes-type sieve for computing the least prime factor for a range of positive integers.
 template<std::unsigned_integral T>
@@ -74,9 +77,9 @@ public:
 
     // Returns the prime factorization of 'n', if 'n' is in [0, 'limit').
     // Out of range arguments result in undefined behaviour.
-    std::vector<PrimePower<T, uint32_t>> PrimeFactors (T n) const
+    std::vector<PrimePower<T, std::uint32_t>> PrimeFactors (T n) const
     {
-        std::vector<PrimePower<T, uint32_t>> primeFactors;
+        std::vector<PrimePower<T, std::uint32_t>> primeFactors;
 
         // Repeatedly divide 'n' by the smallest prime dividing 'n',
         // then look up the new smallest prime dividing the result.
@@ -106,26 +109,26 @@ public:
     {
         std::vector<T> factors;
         auto primeFactors = PrimeFactors (n);
-        size_t addressSize = primeFactors.size ();
-        std::vector<size_t> address (addressSize, 0);
-        size_t numberFactors = 1;
+        std::size_t addressSize = primeFactors.size ();
+        std::vector<std::size_t> address (addressSize, 0);
+        std::size_t numberFactors = 1;
 
         // Standard product form of divisor counting function.
-        for (size_t i = 0; i < addressSize; ++i)
+        for (std::size_t i = 0; i < addressSize; ++i)
             numberFactors *= (primeFactors[i].power + 1);
 
         // Iterate through all possible exponent tuples on the primes dividing 'n'.
-        for (size_t i = 0; i < numberFactors; ++i)
+        for (std::size_t i = 0; i < numberFactors; ++i)
         {
             T factor = 1;
 
-            for (size_t j = 0; j < addressSize; ++j)
-                factor *= Pow (uint64_t (primeFactors[j].prime), address[j]);
+            for (std::size_t j = 0; j < addressSize; ++j)
+                factor *= Pow (std::uint64_t (primeFactors[j].prime), address[j]);
 
             factors.emplace_back (factor);
 
             // Move to the next exponent tuple in lex order.
-            for (size_t j = 0; j < addressSize; ++j)
+            for (std::size_t j = 0; j < addressSize; ++j)
             {
                 address[j] = (address[j] + 1) % (primeFactors[j].power + 1);
 

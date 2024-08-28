@@ -1,11 +1,12 @@
 #pragma once
 
+#include <cstddef>
 #include <concepts>
 #include <iostream>
 #include <memory>
 #include <vector>
 
-#include <BitArray.h>
+#include "BitArray.h"
 
 // An Eratosthenes-type sieve to return all numbers in a given range coprime to a given list of obstructions.
 template<std::unsigned_integral T>
@@ -77,7 +78,7 @@ public:
     }
 
     // Returns the number of numbers in ['lowerLimit', 'upperLimit') coprime to every element of 'obstructions'.
-    size_t Count () const
+    std::size_t Count () const
     {
         return coprimes->size ();
     }

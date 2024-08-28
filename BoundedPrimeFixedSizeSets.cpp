@@ -1,15 +1,21 @@
 #include "BoundedPrimeFixedSizeSets.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <memory>
+#include <vector>
+
 #include "PrimeSieve.h"
 
 // Sets are ordered in lex order, and each set is represented in increasing order.
 
-BoundedPrimeFixedSizeSetIterator::BoundedPrimeFixedSizeSetIterator (uint64_t upperBound, uint32_t setSize)
+BoundedPrimeFixedSizeSetIterator::BoundedPrimeFixedSizeSetIterator (std::uint64_t upperBound, std::uint32_t setSize)
     : upperBound (upperBound),
     setSize (setSize)
 {
     // The pool will still exist even after 'sieve' has been destroyed.
-    PrimeSieve<uint64_t> sieve (upperBound);
+    PrimeSieve<std::uint64_t> sieve (upperBound);
     primePool = sieve.Primes ();
     primes = std::make_shared<primes_t> ();
 
@@ -17,7 +23,7 @@ BoundedPrimeFixedSizeSetIterator::BoundedPrimeFixedSizeSetIterator (uint64_t upp
     // is the set consisting of the smallest 'setSize' primes in 'primePool'.
     n = 1;
 
-    for (size_t i = 0; i < setSize; ++i)
+    for (std::size_t i = 0; i < setSize; ++i)
     {
         indices.emplace_back (i);
         primes->emplace_back ((*primePool)[i]);
@@ -29,8 +35,8 @@ BoundedPrimeFixedSizeSetIterator::BoundedPrimeFixedSizeSetIterator (uint64_t upp
 
 BoundedPrimeFixedSizeSetIterator::BoundedPrimeFixedSizeSetIterator
 (
-    uint64_t upperBound,
-    uint32_t setSize,
+    std::uint64_t upperBound,
+    std::uint32_t setSize,
     std::shared_ptr<const primes_t> primePool
 )
     : upperBound (upperBound),
@@ -41,7 +47,7 @@ BoundedPrimeFixedSizeSetIterator::BoundedPrimeFixedSizeSetIterator
     // is the set consisting of the smallest 'setSize' primes in 'primePool'.
     n = 1;
 
-    for (size_t i = 0; i < setSize; ++i)
+    for (std::size_t i = 0; i < setSize; ++i)
     {
         indices.emplace_back (i);
         primes->emplace_back ((*primePool)[i]);
@@ -56,7 +62,7 @@ std::shared_ptr<const primes_t> BoundedPrimeFixedSizeSetIterator::Primes () cons
     return primes;
 }
 
-uint64_t BoundedPrimeFixedSizeSetIterator::N () const
+std::uint64_t BoundedPrimeFixedSizeSetIterator::N () const
 {
     return n;
 }
@@ -67,13 +73,13 @@ void BoundedPrimeFixedSizeSetIterator::operator++ ()
     // starting at the highest possible index in 'primes' and moving backwards,
     // and updating the subsequent primes in 'primes' as necessary
     // to preserve the increasing order and lex order properties.
-    size_t toIncrement = indices.size () - 1;
+    std::size_t toIncrement = indices.size () - 1;
 
     while (true)
     {
         // If the current guess for 'toIncrement' is correct, 'newLastIndex'
         // contains the index in 'primePool' of the last prime in the correct new value of 'primes'
-        size_t newLastIndex = indices[toIncrement] + indices.size () - toIncrement;
+        std::size_t newLastIndex = indices[toIncrement] + indices.size () - toIncrement;
 
         if (newLastIndex < primePool->size ())
         {
@@ -82,7 +88,7 @@ void BoundedPrimeFixedSizeSetIterator::operator++ ()
             // of 'primes' starting at 'toIncrement' will be the subsequence of
             // 'primePool' starting at 'indices[toIncrement] + 1' and ending at 'indices[newLastIndex]'
             // This can be deduced by considering the increasing order and lex order properties.
-            for (size_t i = toIncrement, j = indices[toIncrement] + 1; i < indices.size (); ++i, ++j)
+            for (std::size_t i = toIncrement, j = indices[toIncrement] + 1; i < indices.size (); ++i, ++j)
             {
                 indices[i] = j;
                 (*primes)[i] = (*primePool)[j];
@@ -90,7 +96,7 @@ void BoundedPrimeFixedSizeSetIterator::operator++ ()
 
             n = 1;
 
-            for (uint64_t prime : *primes)
+            for (std::uint64_t prime : *primes)
                 n *= prime;
 
             if (n < upperBound)
@@ -103,7 +109,7 @@ void BoundedPrimeFixedSizeSetIterator::operator++ ()
         // Step up one level in the search tree by decrementing 'toIncrement'.
         --toIncrement;
 
-        if (toIncrement == SIZE_MAX)
+        if (toIncrement == std::numeric_limits<std::size_t>::max ())
         {
             // All valid prime sets have already been observed.
             // Enter the end state.
@@ -118,7 +124,7 @@ bool BoundedPrimeFixedSizeSetIterator::IsEnd () const
     return isEnd;
 }
 
-int32_t BoundedPrimeFixedSizeSetIterator::MoebiusN () const
+std::int32_t BoundedPrimeFixedSizeSetIterator::MoebiusN () const
 {
     // Efficient (-1)^n algorithm.
     return (-(setSize & 1)) | 1;

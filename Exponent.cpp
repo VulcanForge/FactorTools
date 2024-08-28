@@ -1,9 +1,11 @@
-#include <Exponent.h>
+#include "Exponent.h"
 
-uint64_t Pow (uint64_t base, uint64_t exponent)
+#include <cstdint>
+
+std::uint64_t Pow (std::uint64_t base, std::uint64_t exponent)
 {
     // Standard binary exponential algorithm.
-    uint64_t power = 1;
+    std::uint64_t power = 1;
 
     while (exponent > 0)
     {
@@ -17,7 +19,7 @@ uint64_t Pow (uint64_t base, uint64_t exponent)
     return power;
 }
 
-double Pow (double base, uint64_t exponent)
+double Pow (double base, std::uint64_t exponent)
 {
     // Standard binary exponentiation algorithm.
     double power = 1;

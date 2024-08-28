@@ -1,4 +1,6 @@
-#include <PrimeTest.h>
+#include "PrimeTest.h"
+#include <gmp.h>
+#include <gmpxx.h>
 
 bool FermatProbabilisticTest (const mpz_class n, const mpz_class base)
 {

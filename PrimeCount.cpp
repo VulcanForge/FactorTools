@@ -1,15 +1,15 @@
-#include <PrimeCount.h>
+#include "PrimeCount.h"
 
 #include <cmath>
-#include <cmath>
+#include <cstdint>
 
-uint64_t LegendreCount (uint64_t n)
+std::uint64_t LegendreCount (std::uint64_t n)
 {
-    return n / (log (n) - 1);
+    return n / (std::log (n) - 1);
 }
 
-uint64_t LiCount (uint64_t n)
+std::uint64_t LiCount (std::uint64_t n)
 {
     // Wikipedia assures me that this is correct.
-    return std::expint (log (n));
+    return std::expint (std::log (n));
 }

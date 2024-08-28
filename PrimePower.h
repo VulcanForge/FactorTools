@@ -3,7 +3,7 @@
 #include <concepts>
 #include <cstdint>
 
-#include <Exponent.h>
+#include "Exponent.h"
 
 // A prime power.
 template<std::unsigned_integral TPrime, std::unsigned_integral TPower>
@@ -20,8 +20,8 @@ struct PrimePower
         : prime (prime), power (power) {}
 
     // Returns the value of the prime power.
-    uint64_t N () const
+    std::uint64_t N () const
     {
-        return Pow (uint64_t (prime), power);
+        return Pow (std::uint64_t (prime), power);
     }
 };

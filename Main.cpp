@@ -1,10 +1,20 @@
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include <gmpxx.h>
 
-#include <FactorTools.h>
+#include "BoundedFactorizations.h"
+#include "BoundedPrimeFixedSizeSets.h"
+#include "BoundedPrimeSets.h"
+#include "Factorization.h"
+#include "FactorSieve.h"
+#include "PrimeCount.h"
+#include "PrimePower.h"
+#include "PrimeSieve.h"
+#include "PrimeTest.h"
 
 int main ()
 {
@@ -25,17 +35,17 @@ int main ()
 
         if (c == '1')
         {
-            uint64_t limit;
+            std::uint64_t limit;
             std::cout << "Limit: ";
             std::cin >> limit;
             std::cout << "\n";
             PrimeSieve sieve (limit, true);
-            size_t count = sieve.Count ();
+            std::size_t count = sieve.Count ();
             std::cout << "Found " << count << " primes less than " << limit << "\n\n";
 
             while (true)
             {
-                size_t index;
+                std::size_t index;
                 std::cout << "Index (-1 to return to menu): ";
                 std::cin >> index;
                 std::cout << "\n";
@@ -46,7 +56,7 @@ int main ()
                     std::cout << "Index too large\n\n";
                 else
                 {
-                    for (size_t i = index; i < index + 10 && i < count; ++i)
+                    for (std::size_t i = index; i < index + 10 && i < count; ++i)
                         std::cout << (*sieve.Primes ())[i] << "\n";
 
                     std::cout << "\n";
@@ -55,7 +65,7 @@ int main ()
         }
         else if (c == '2')
         {
-            uint64_t n;
+            std::uint64_t n;
             std::cout << "n: ";
             std::cin >> n;
             std::cout << "\n";
@@ -72,7 +82,7 @@ int main ()
 
                 std::cout << "\nFactors of " << n << "\n\n";
 
-                for (uint64_t factor : *factorization.Factors ())
+                for (std::uint64_t factor : *factorization.Factors ())
                     std::cout << factor << "\n";
             }
 
@@ -98,7 +108,7 @@ int main ()
         }
         else if (c == '3')
         {
-            uint64_t n;
+            std::uint64_t n;
             std::cout << "n: ";
             std::cin >> n;
             std::cout << "\n";
@@ -119,7 +129,7 @@ int main ()
 
             if (c == '1')
             {
-                uint64_t limit;
+                std::uint64_t limit;
                 std::cout << "Limit: ";
                 std::cin >> limit;
                 std::cout
@@ -127,7 +137,7 @@ int main ()
                     << "1 = (empty product)\n"
                     << "mu(1) = 1\n";
                 BoundedPrimeSetIterator bpsi (limit);
-                size_t counter = 1;
+                std::size_t counter = 1;
 
                 for (++bpsi; !bpsi.IsEnd (); ++bpsi)
                 {
@@ -149,11 +159,11 @@ int main ()
             }
             else if (c == '2')
             {
-                uint64_t limit;
+                std::uint64_t limit;
                 std::cout << "Limit: ";
                 std::cin >> limit;
                 std::cout << "\n";
-                uint32_t setSize;
+                std::uint32_t setSize;
                 std::cout << "Set size: ";
                 std::cin >> setSize;
                 std::cout << "\n";
@@ -163,7 +173,7 @@ int main ()
                 else
                 {
                     BoundedPrimeFixedSizeSetIterator bpfssi (limit, setSize);
-                    size_t counter = 0;
+                    std::size_t counter = 0;
 
                     for (; !bpfssi.IsEnd (); ++bpfssi)
                     {
@@ -184,13 +194,13 @@ int main ()
             }
             else if (c == '3')
             {
-                uint64_t limit;
+                std::uint64_t limit;
                 std::cout << "Limit: ";
                 std::cin >> limit;
                 std::cout << "\n";
                 BoundedFactorizationIterator bfi (limit);
                 std::cout << "1 = (empty product)\n";
-                size_t counter = 1;
+                std::size_t counter = 1;
 
                 for (++bfi; !bfi.IsEnd (); ++bfi)
                 {
@@ -225,13 +235,13 @@ int main ()
         }
         else if (c == '5')
         {
-            uint64_t limit;
+            std::uint64_t limit;
             std::cout << "Limit: ";
             std::cin >> limit;
             std::cout << "\n";
             FactorSieve sieve (limit);
 
-            for (uint64_t n = 0; n < limit; ++n)
+            for (std::uint64_t n = 0; n < limit; ++n)
                 std::cout << n << ": " << sieve.LeastPrimeFactor (n) << "\n";
 
             std::cout << "\n";

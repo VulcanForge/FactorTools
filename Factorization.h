@@ -1,15 +1,18 @@
 #pragma once
 
+#include <algorithm>
+#include <cmath>
 #include <concepts>
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <memory>
 #include <numeric>
 #include <vector>
 
-#include <Exponent.h>
-#include <PrimePower.h>
-#include <PrimeSieve.h>
+#include "Exponent.h"
+#include "PrimePower.h"
+#include "PrimeSieve.h"
 
 // A factorization of a positive integer.
 template<std::unsigned_integral T>
@@ -20,7 +23,7 @@ private:
     T n;
 
     // The prime factorization of 'n'.
-    std::shared_ptr<std::vector<PrimePower<T, uint32_t>>> primeFactors;
+    std::shared_ptr<std::vector<PrimePower<T, std::uint32_t>>> primeFactors;
 
     // The factors of 'n' in increasing order.
     std::shared_ptr<std::vector<T>> factors;
@@ -29,7 +32,7 @@ private:
     void GeneratePrimeFactors (std::shared_ptr<const PrimeSieve<T>> sieve, bool verbose)
     {
         // Standard trial factoring algorithm.
-        T sqrt_r = sqrt (n);
+        T sqrt_r = T (std::sqrt (n));
         T r = n;
 
         if (verbose)
@@ -41,7 +44,7 @@ private:
                 if (prime > sqrt_r)
                     break;
 
-                uint32_t power = 0;
+                std::uint32_t power = 0;
 
                 std::clog << "Trial factoring by " << prime << "\n";
 
@@ -54,7 +57,7 @@ private:
                 if (power > 0)
                 {
                     primeFactors->emplace_back (prime, power);
-                    sqrt_r = sqrt (r);
+                    sqrt_r = T (std::sqrt (r));
                 }
             }
         }
@@ -64,7 +67,7 @@ private:
                 if (prime > sqrt_r)
                     break;
 
-                uint32_t power = 0;
+                std::uint32_t power = 0;
 
                 while (r % prime == 0)
                 {
@@ -75,7 +78,7 @@ private:
                 if (power > 0)
                 {
                     primeFactors->emplace_back (prime, power);
-                    sqrt_r = sqrt (r);
+                    sqrt_r = T (std::sqrt (r));
                 }
             }
 
@@ -86,26 +89,26 @@ private:
     // Computes the factors of 'n'.
     void GenerateFactors ()
     {
-        size_t addressSize = primeFactors->size ();
-        std::vector<size_t> address (addressSize, 0);
-        size_t numberFactors = 1;
+        std::size_t addressSize = primeFactors->size ();
+        std::vector<std::size_t> address (addressSize, 0);
+        std::size_t numberFactors = 1;
 
         // Standard product form of divisor counting function.
-        for (size_t i = 0; i < addressSize; ++i)
+        for (std::size_t i = 0; i < addressSize; ++i)
             numberFactors *= ((*primeFactors)[i].power + 1);
 
         // Iterate through all possible exponent tuples on the primes dividing 'n'.
-        for (size_t i = 0; i < numberFactors; ++i)
+        for (std::size_t i = 0; i < numberFactors; ++i)
         {
             T factor = 1;
 
-            for (size_t j = 0; j < addressSize; ++j)
-                factor *= Pow (uint64_t ((*primeFactors)[j].prime), address[j]);
+            for (std::size_t j = 0; j < addressSize; ++j)
+                factor *= Pow (std::uint64_t ((*primeFactors)[j].prime), address[j]);
 
             factors->emplace_back (factor);
 
             // Move to the next exponent tuple in lex order.
-            for (size_t j = 0; j < addressSize; ++j)
+            for (std::size_t j = 0; j < addressSize; ++j)
             {
                 address[j] = (address[j] + 1) % ((*primeFactors)[j].power + 1);
 
@@ -120,13 +123,13 @@ private:
 public:
     // Constructs a Factorization of 'n' and optionally outputs progress to 'clog'.
     Factorization (T n, bool verbose = false)
-        : Factorization (n, std::make_shared<const PrimeSieve<T>> (sqrt (n), verbose), verbose) {}
+        : Factorization (n, std::make_shared<const PrimeSieve<T>> (T (std::sqrt (n)), verbose), verbose) {}
 
     // Constructs a Factorization of 'n' using a precomputed list of primes
     // and optionally outputs progress to 'clog'.
     Factorization (T n, std::shared_ptr<const PrimeSieve<T>> sieve, bool verbose = false)
         : n (n),
-        primeFactors (std::make_shared<std::vector<PrimePower<T, uint32_t>>> ()),
+        primeFactors (std::make_shared<std::vector<PrimePower<T, std::uint32_t>>> ()),
         factors (std::make_shared<std::vector<T>> ())
     {
         GeneratePrimeFactors (sieve, verbose);
@@ -134,19 +137,19 @@ public:
     }
 
     // Returns the prime factorization of 'n'.
-    std::shared_ptr<const std::vector<PrimePower<T, uint32_t>>> PrimeFactors () const
+    std::shared_ptr<const std::vector<PrimePower<T, std::uint32_t>>> PrimeFactors () const
     {
         return primeFactors;
     }
 
     // Returns the number of distinct prime factors of 'n'.
-    size_t PrimeFactorsCount () const
+    std::size_t PrimeFactorsCount () const
     {
         return primeFactors->size ();
     }
 
     // Returns the 'prime'-adic valuation of 'n'.
-    uint32_t PAdicValuation (T prime) const
+    std::uint32_t PAdicValuation (T prime) const
     {
         for (const auto& primePower : *primeFactors)
             if (primePower.prime == prime)
@@ -156,21 +159,21 @@ public:
     }
 
     // Returns the 'prime'-adic valuation of 'n'.
-    uint32_t NuP (T prime) const
+    std::uint32_t NuP (T prime) const
     {
         return PAdicValuation (prime);
     }
 
     // Returns the number of distinct prime factors of 'n'.
-    size_t SmallOmega () const
+    std::size_t SmallOmega () const
     {
         return primeFactors->size ();
     }
 
     // Returns the number of prime factors of 'n' with multiplicity.
-    size_t BigOmega () const
+    std::size_t BigOmega () const
     {
-        size_t sum = 0;
+        std::size_t sum = 0;
 
         for (const auto& primePower : *primeFactors)
             sum += primePower.power;
@@ -185,21 +188,21 @@ public:
     }
 
     // Returns the number of factors of 'n'.
-    size_t FactorsCount () const
+    std::size_t FactorsCount () const
     {
         return factors->size ();
     }
 
     // Returns the number of factors of 'n'.
-    size_t Tau () const
+    std::size_t Tau () const
     {
         return FactorsCount ();
     }
 
     // Returns the sum of the proper factors of 'n'.
-    uint64_t SumProperFactors () const
+    std::uint64_t SumProperFactors () const
     {
-        uint64_t sum = 0;
+        std::uint64_t sum = 0;
 
         for (auto factor = factors->cbegin (); factor != factors->cend () - 1; ++factor)
             sum += (*factor);
@@ -208,18 +211,18 @@ public:
     }
 
     // Returns the sum of the divisors of 'n'.
-    uint64_t Sigma1 () const
+    std::uint64_t Sigma1 () const
     {
         return SumProperFactors () + n;
     }
 
     // Returns the sum of the 'k'-th powers of the divisors of 'n'.
-    uint64_t SigmaK (uint64_t k) const
+    std::uint64_t SigmaK (std::uint64_t k) const
     {
-        uint64_t sum = 0;
+        std::uint64_t sum = 0;
 
         for (T factor : *factors)
-            sum += Pow (uint64_t (factor), k);
+            sum += Pow (std::uint64_t (factor), k);
 
         return sum;
     }
@@ -254,7 +257,7 @@ public:
     }
 
     // Returns 0 if 'n' is not squarefree, 1 if 'n' has an even number of prime factors, and -1 otherwise.
-    int32_t MoebiusFunction () const
+    std::int32_t MoebiusFunction () const
     {
         for (const auto& primePower : *primeFactors)
             if (primePower.power > 1)
@@ -265,20 +268,20 @@ public:
     }
 
     // Returns 0 if 'n' is not squarefree, 1 if 'n' has an even number of prime factors, and -1 otherwise.
-    int32_t Mu () const
+    std::int32_t Mu () const
     {
         return MoebiusFunction ();
     }
 
     // Returns -1 to the power of 'BigOmega ()'.
-    int32_t LiouvilleFunction () const
+    std::int32_t LiouvilleFunction () const
     {
         // Efficient (-1)^n algorithm.
         return (-(BigOmega () & 1)) | 1;
     }
 
     // Returns -1 to the power of 'BigOmega ()'.
-    int32_t SmallLambda () const
+    std::int32_t SmallLambda () const
     {
         // Efficient (-1)^n algorithm.
         return (-(BigOmega () & 1)) | 1;
@@ -306,7 +309,7 @@ public:
                 exponent = std::lcm
                 (
                     exponent,
-                    Pow (uint64_t (primePower->prime), primePower->power - 1) * (primePower->prime - 1)
+                    Pow (std::uint64_t (primePower->prime), primePower->power - 1) * (primePower->prime - 1)
                 );
         }
         else
@@ -317,7 +320,7 @@ public:
                 exponent = std::lcm
                 (
                     exponent,
-                    Pow (uint64_t (primePower.prime), primePower.power - 1) * (primePower.prime - 1)
+                    Pow (std::uint64_t (primePower.prime), primePower.power - 1) * (primePower.prime - 1)
                 );
         }
 
@@ -331,7 +334,7 @@ public:
     }
 
     // Returns the lowest common multiple of 'n' and 'other.n'.
-    uint64_t LCM (const Factorization& other)
+    std::uint64_t LCM (const Factorization& other)
     {
         return std::lcm (n, other.n);
     }
@@ -355,7 +358,7 @@ public:
     }
 
     // Returns whether 'n' is 'h'-free; that is, whether no 'h'-th power divides 'n'.
-    bool IsHFree (uint32_t h) const
+    bool IsHFree (std::uint32_t h) const
     {
         for (const auto& primePower : *primeFactors)
             if (primePower.power >= h)

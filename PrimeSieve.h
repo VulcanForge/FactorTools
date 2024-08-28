@@ -1,11 +1,14 @@
 #pragma once
 
+#include <algorithm>
 #include <concepts>
+#include <cstddef>
 #include <iostream>
+#include <iterator>
 #include <memory>
 #include <vector>
 
-#include <BitArray.h>
+#include "BitArray.h"
 
 // An Eratosthenes prime sieve.
 template<std::unsigned_integral T>
@@ -77,14 +80,14 @@ public:
     }
 
     // Returns the number of primes in [0, 'limit').
-    size_t Count () const
+    std::size_t Count () const
     {
         return primes->size ();
     }
 
     // Returns the number of primes in [0, 'n'], if 'n' is in [0, 'limit').
     // Out of range arguments result in undefined behaviour.
-    size_t PrimePi (T n) const
+    std::size_t PrimePi (T n) const
     {
         // Find the first prime which exceeds 'n'.
         auto nextPrime = std::upper_bound (primes->cbegin (), primes->cend (), n);

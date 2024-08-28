@@ -1,25 +1,33 @@
 #include "BoundedFactorizations.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <memory>
+#include <vector>
+
+#include "BoundedPrimeSets.h"
+#include "Exponent.h"
 #include "PrimeSieve.h"
 
 // Factorizations are ordered first by the set of distinct primes in lex order,
 // then by the exponent tuples in lex order.
 
-BoundedFactorizationIterator::BoundedFactorizationIterator (uint64_t upperBound)
+BoundedFactorizationIterator::BoundedFactorizationIterator (std::uint64_t upperBound)
     : upperBound (upperBound),
     factorization (std::make_shared<factorization_t> ()),
     n (1),
     isEnd (upperBound <= 1)
 {
     // The pool will still exist even after 'sieve' has been destroyed.
-    PrimeSieve<uint64_t> sieve (upperBound);
+    PrimeSieve<std::uint64_t> sieve (upperBound);
     primePool = sieve.Primes ();
     bpsi = std::make_unique<BoundedPrimeSetIterator> (upperBound, primePool);
 }
 
 BoundedFactorizationIterator::BoundedFactorizationIterator
 (
-    uint64_t upperBound,
+    std::uint64_t upperBound,
     std::shared_ptr<const primes_t> primePool
 )
     : upperBound (upperBound),
@@ -34,7 +42,7 @@ std::shared_ptr<const factorization_t> BoundedFactorizationIterator::Factorizati
     return factorization;
 }
 
-uint64_t BoundedFactorizationIterator::N () const
+std::uint64_t BoundedFactorizationIterator::N () const
 {
     return n;
 }
@@ -43,11 +51,11 @@ void BoundedFactorizationIterator::operator++ ()
 {
     // Attempt to increment the exponent of one of the primes in the current prime set,
     // starting at the highest possible index and moving backwards.
-    size_t toIncrement = factorization->size () - 1;
+    std::size_t toIncrement = factorization->size () - 1;
 
     while (true)
     {
-        if (toIncrement == SIZE_MAX)
+        if (toIncrement == std::numeric_limits<std::size_t>::max ())
         {
             // All valid exponent tuples for the current set of primes have already been observed.
             // Attempt to step to the next set of primes in lex order.
@@ -64,7 +72,7 @@ void BoundedFactorizationIterator::operator++ ()
             // The first exponent tuple in lex order for the new prime set is that consisting of 1's.
             factorization->clear ();
 
-            for (uint64_t prime : *(bpsi->Primes ()))
+            for (std::uint64_t prime : *(bpsi->Primes ()))
                 factorization->emplace_back (prime, 1);
 
             n = bpsi->N ();
@@ -73,7 +81,7 @@ void BoundedFactorizationIterator::operator++ ()
 
         // Attempt to increment the exponent for the prime at 'toIncrement'.
         auto& primePower = (*factorization)[toIncrement];
-        uint64_t nextN = n * primePower.prime;
+        std::uint64_t nextN = n * primePower.prime;
 
         if (nextN < upperBound)
         {
@@ -97,7 +105,7 @@ bool BoundedFactorizationIterator::IsEnd () const
     return isEnd;
 }
 
-int32_t BoundedFactorizationIterator::MoebiusN () const
+std::int32_t BoundedFactorizationIterator::MoebiusN () const
 {
     for (auto& primePower : *factorization)
         if (primePower.power > 1)

@@ -1,23 +1,27 @@
 #include "BoundedPrimeSets.h"
 
+#include <cstdint>
+#include <memory>
+#include <vector>
+
 #include "PrimeSieve.h"
 
 // Sets are ordered in lex order, starting at the empty set, and each set is represented in increasing order.
 
-BoundedPrimeSetIterator::BoundedPrimeSetIterator (uint64_t upperBound)
+BoundedPrimeSetIterator::BoundedPrimeSetIterator (std::uint64_t upperBound)
     : upperBound (upperBound),
     primes (std::make_shared<primes_t> ()),
     n (1),
     isEnd (upperBound <= 1)
 {
     // The pool will still exist even after 'sieve' has been destroyed.
-    PrimeSieve<uint64_t> sieve (upperBound);
+    PrimeSieve<std::uint64_t> sieve (upperBound);
     primePool = sieve.Primes ();
 }
 
 BoundedPrimeSetIterator::BoundedPrimeSetIterator
 (
-    uint64_t upperBound,
+    std::uint64_t upperBound,
     std::shared_ptr<const primes_t> primePool
 )
     : upperBound (upperBound),
@@ -31,7 +35,7 @@ std::shared_ptr<const primes_t> BoundedPrimeSetIterator::Primes () const
     return primes;
 }
 
-uint64_t BoundedPrimeSetIterator::N () const
+std::uint64_t BoundedPrimeSetIterator::N () const
 {
     return n;
 }
@@ -63,8 +67,8 @@ void BoundedPrimeSetIterator::operator++ ()
     {
         // There is a prime 'nextPrime' in 'primePool' greater than any prime in 'primes'.
         // First try to append 'nextPrime' to 'primes'.
-        uint64_t nextPrime = (*primePool)[indices.back () + 1];
-        uint64_t nextN = n * nextPrime;
+        std::uint64_t nextPrime = (*primePool)[indices.back () + 1];
+        std::uint64_t nextN = n * nextPrime;
 
         if (nextN < upperBound)
         {
@@ -106,8 +110,8 @@ void BoundedPrimeSetIterator::operator++ ()
         }
 
         // Try to replace the last prime with its successor in 'primePool'.
-        uint64_t nextPrime = (*primePool)[indices.back () + 1];
-        uint64_t nextN = n / primes->back () * nextPrime;
+        std::uint64_t nextPrime = (*primePool)[indices.back () + 1];
+        std::uint64_t nextN = n / primes->back () * nextPrime;
 
         if (nextN < upperBound)
         {
@@ -125,7 +129,7 @@ bool BoundedPrimeSetIterator::IsEnd () const
     return isEnd;
 }
 
-int32_t BoundedPrimeSetIterator::MoebiusN () const
+std::int32_t BoundedPrimeSetIterator::MoebiusN () const
 {
     // Efficient (-1)^n algorithm.
     return (-(primes->size () & 1)) | 1;
